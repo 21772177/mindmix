@@ -76,11 +76,47 @@ router.post('/register', async (req, res) => {
 // @access  Public
 router.post('/login', async (req, res) => {
   try {
+    // Always allow demo/login for testing (database optional)
+    console.log('📝 Login attempt - DB status:', isDBConnected() ? 'Connected' : 'Demo mode');
+    
     if (!isDBConnected()) {
-      return res.status(503).json({
-        ok: false,
-        error: 'Database not connected. Demo mode - cannot login users.',
-        demo: true
+      // In demo mode, create a mock user
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ 
+          ok: false, 
+          error: 'Please provide email and password' 
+        });
+      }
+      
+      // Create demo user token
+      const token = jwt.sign(
+        { 
+          id: 'demo-user-123', 
+          email: email,
+          demo: true 
+        },
+        process.env.JWT_SECRET || 'demo-secret-key-change-in-production'
+      );
+      
+      return res.json({
+        ok: true,
+        data: {
+          token,
+          user: {
+            id: 'demo-user-123',
+            name: 'Demo User',
+            email: email,
+            demo: true,
+            stats: {
+              totalPoints: 0,
+              level: 1,
+              correctAnswers: 0,
+              wrongAnswers: 0
+            }
+          }
+        }
       });
     }
     
