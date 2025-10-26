@@ -5,7 +5,9 @@
 const getApiUrl = () => {
   // Check for environment variable first (set in Vercel)
   if (process.env.REACT_APP_API_URL) {
-    return process.env.REACT_APP_API_URL;
+    const url = process.env.REACT_APP_API_URL;
+    // Ensure it ends without trailing slash
+    return url.endsWith('/') ? url.slice(0, -1) : url;
   }
   
   // Detect if we're on Vercel
