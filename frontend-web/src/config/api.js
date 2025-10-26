@@ -5,6 +5,19 @@ import axios from 'axios';
 
 // Auto-detect API URL based on current location
 const getApiUrl = () => {
+  // Check for environment variable first (set in Vercel)
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  
+  // Detect if we're on Vercel
+  const isVercel = window.location.hostname.includes('vercel.app');
+  
+  if (isVercel) {
+    // For Vercel, use the backend URL directly
+    return 'https://mindmix-backend-8sx7xr6ok-nikhilesh-shinganes-projects.vercel.app';
+  }
+  
   // Detect if we're on a tunnel
   const isTunnel = !window.location.hostname.includes('localhost') && 
                     !window.location.hostname.includes('127.0.0.1') &&
@@ -12,16 +25,13 @@ const getApiUrl = () => {
                      window.location.hostname.includes('serveo') ||
                      window.location.hostname.includes('ngrok'));
   
-  // For tunnels, we need to proxy through the frontend's port to the backend
-  // The proxy in package.json only works for localhost
+  // For tunnels, use the same origin
   if (isTunnel) {
-    // Use a subdomain or path-based approach
-    // For now, let's use the same origin
     return window.location.origin;
   }
   
   // For localhost, use direct backend URL
-  return process.env.REACT_APP_API_URL || 'http://192.168.0.109:4000';
+  return 'http://192.168.0.109:4000';
 };
 
 const API_URL = getApiUrl();
