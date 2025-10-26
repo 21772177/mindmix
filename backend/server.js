@@ -15,7 +15,7 @@ connectDB().catch(err => {
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://mindmix.vercel.app', /mindmix.*\.vercel\.app$/],
+  origin: true, // Allow all origins
   credentials: true
 }));
 app.use(express.json());
