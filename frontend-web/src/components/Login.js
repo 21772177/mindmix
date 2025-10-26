@@ -24,11 +24,15 @@ function Login({ onLogin }) {
         ? { email: formData.email, password: formData.password }
         : formData;
 
-      // Ensure we're using full URL (not relative)
-      const fullUrl = API_URL.startsWith('http') ? `${API_URL}${endpoint}` : `${API_URL}${endpoint}`;
+      // Build full URL
+      const fullUrl = `${API_URL}${endpoint}`;
       console.log('📡 Calling:', fullUrl);
       
-      const response = await axios.post(fullUrl, data);
+      const response = await axios.post(fullUrl, data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       
       if (response.data.ok) {
         onLogin(response.data.data.user, response.data.data.token);
