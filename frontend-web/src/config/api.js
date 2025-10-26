@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 // Centralized API Configuration
 // Single URL that works everywhere (mobile + web)
 
@@ -54,8 +52,8 @@ export const apiCall = async (method, endpoint, data = null, token = null, retri
 
   for (let i = 0; i <= retries; i++) {
     try {
-      const axios = require('axios');
-      const response = await axios(config);
+      const axiosLib = require('axios');
+      const response = await axiosLib(config);
       return response.data;
     } catch (error) {
       // Log error details
@@ -63,12 +61,11 @@ export const apiCall = async (method, endpoint, data = null, token = null, retri
       
       if (i === retries) {
         // Last attempt failed, throw error
-        throw {
-          message: error.response?.data?.error || error.message || 'Network error',
-          status: error.response?.status || 500,
-          isConnectionError: error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK',
-          apiUrl: API_URL
-        };
+        const err = new Error(error.response?.data?.error || error.message || 'Network error');
+        err.status = error.response?.status || 500;
+        err.isConnectionError = error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK';
+        err.apiUrl = API_URL;
+        throw err;
       }
       
       // Wait before retry (exponential backoff)
