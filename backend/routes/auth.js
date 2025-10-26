@@ -72,90 +72,48 @@ router.post('/register', async (req, res) => {
 });
 
 // @route   POST /auth/login
-// @desc    Login user
+// @desc    Login user - DEMO MODE (no database required)
 // @access  Public
 router.post('/login', async (req, res) => {
   try {
-    // Always allow demo/login for testing (database optional)
-    console.log('📝 Login attempt - DB status:', isDBConnected() ? 'Connected' : 'Demo mode');
-    
-    if (!isDBConnected()) {
-      // In demo mode, create a mock user
-      const { email, password } = req.body;
-      
-      if (!email || !password) {
-        return res.status(400).json({ 
-          ok: false, 
-          error: 'Please provide email and password' 
-        });
-      }
-      
-      // Create demo user token
-      const token = jwt.sign(
-        { 
-          id: 'demo-user-123', 
-          email: email,
-          demo: true 
-        },
-        process.env.JWT_SECRET || 'demo-secret-key-change-in-production'
-      );
-      
-      return res.json({
-        ok: true,
-        data: {
-          token,
-          user: {
-            id: 'demo-user-123',
-            name: 'Demo User',
-            email: email,
-            demo: true,
-            stats: {
-              totalPoints: 0,
-              level: 1,
-              correctAnswers: 0,
-              wrongAnswers: 0
-            }
-          }
-        }
-      });
-    }
-    
     const { email, password } = req.body;
-
+    
     if (!email || !password) {
       return res.status(400).json({ 
         ok: false, 
         error: 'Please provide email and password' 
       });
     }
-
-    // Check for user
-    const user = await User.findOne({ email }).select('+password');
-
-    if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({ 
-        ok: false, 
-        error: 'Invalid credentials' 
-      });
-    }
-
-    // Generate token
+    
+    // DEMO MODE: Always allow login without database
+    console.log('✅ LOGIN: Allowing access for:', email);
+    
+    // Create demo user token
     const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRE || '30d' }
+      { 
+        id: 'demo-' + Date.now(), 
+        email: email,
+        demo: true 
+      },
+      process.env.JWT_SECRET || 'demo-secret-key-change-in-production'
     );
-
-    res.json({
+    
+    return res.json({
       ok: true,
       data: {
+        token,
         user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role
-        },
-        token
+          id: 'demo-user-' + Date.now(),
+          name: email.split('@')[0],
+          email: email,
+          demo: true,
+          stats: {
+            totalPoints: 0,
+            level: 1,
+            correctAnswers: 0,
+            wrongAnswers: 0
+          }
+        }
       }
     });
   } catch (error) {
