@@ -24,9 +24,18 @@ function Login({ onLogin }) {
         ? { email: formData.email, password: formData.password }
         : formData;
 
-      // Build full URL
-      const fullUrl = `${API_URL}${endpoint}`;
-      console.log('📡 Calling:', fullUrl);
+      // Build full URL with proper protocol handling
+      let fullUrl;
+      if (API_URL && API_URL.startsWith('http')) {
+        fullUrl = `${API_URL}${endpoint}`;
+      } else {
+        // Fallback if API_URL is not set correctly
+        fullUrl = `https://mindmix-backend-8sx7xr6ok-nikhilesh-shinganes-projects.vercel.app${endpoint}`;
+      }
+      
+      console.log('🔗 API_URL value:', API_URL);
+      console.log('📡 Full URL:', fullUrl);
+      console.log('🌐 Window origin:', window.location.origin);
       
       const response = await axios.post(fullUrl, data, {
         headers: {
