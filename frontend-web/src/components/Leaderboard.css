@@ -1,0 +1,120 @@
+.leaderboard-container {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.leaderboard-header h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.leaderboard-loading,
+.leaderboard-error,
+.leaderboard-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #f8f9fa;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+}
+
+.leaderboard-item:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.leaderboard-item.top-1 {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: white;
+  font-weight: bold;
+}
+
+.leaderboard-item.top-2 {
+  background: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%);
+  font-weight: bold;
+}
+
+.leaderboard-item.top-3 {
+  background: linear-gradient(135deg, #d97706 0%, #92400e 100%);
+  color: white;
+  font-weight: bold;
+}
+
+.rank {
+  font-size: 1.5rem;
+  font-weight: bold;
+  width: 60px;
+  text-align: center;
+}
+
+.player-info {
+  flex: 1;
+  margin-left: 1rem;
+}
+
+.player-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.player-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.leaderboard-item.top-1 .player-stats,
+.leaderboard-item.top-3 .player-stats {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.stat {
+  padding: 0.25rem 0.75rem;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+.leaderboard-item.top-1 .stat,
+.leaderboard-item.top-3 .stat {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.player-score {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 1rem;
+  }
+
+  .player-stats {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}

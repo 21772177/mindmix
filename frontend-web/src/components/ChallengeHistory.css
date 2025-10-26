@@ -1,0 +1,177 @@
+.history-container {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.history-header h2 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.history-loading,
+.history-error,
+.history-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.history-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-box {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  color: white;
+}
+
+.stat-box.success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.history-filter {
+  margin-bottom: 1.5rem;
+}
+
+.history-filter label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.history-empty-message {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+.history-empty-message p {
+  margin: 0.5rem 0;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #f8f9fa;
+  transition: all 0.3s;
+}
+
+.history-item:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.history-item.correct {
+  border-left: 4px solid #10b981;
+}
+
+.history-item.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.history-type {
+  font-size: 2rem;
+  width: 60px;
+  text-align: center;
+}
+
+.history-content {
+  flex: 1;
+}
+
+.history-info {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.challenge-type,
+.challenge-difficulty,
+.challenge-date {
+  background: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.challenge-type {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.history-result {
+  margin-top: 0.5rem;
+}
+
+.result-success {
+  color: #10b981;
+  font-weight: bold;
+}
+
+.result-failure {
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.history-rewards {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.reward {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #667eea;
+}
+
+@media (max-width: 768px) {
+  .history-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .history-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .history-type {
+    font-size: 1.5rem;
+  }
+}

@@ -1,0 +1,20 @@
+
+🎯 QUICK SHARE COMMANDS
+========================
+
+To make app public (NO PASSWORD):
+
+1. Open new terminal
+2. Run this command:
+   npx localtunnel --port 3000
+
+3. Copy the URL shown (like: https://abc.loca.lt)
+4. Share that URL with testers!
+
+That's it! NO PASSWORD NEEDED!
+
+OR for SSH tunnel (also no password):
+   ssh -R 80:localhost:3000 serveo.net
+
+Copy-paste this command - it's free!
+

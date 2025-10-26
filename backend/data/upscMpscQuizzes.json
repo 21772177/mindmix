@@ -1,0 +1,168 @@
+{
+  "currentAffairs": [
+    {
+      "question": "Who is the current Secretary-General of the United Nations?",
+      "options": ["António Guterres", "Ban Ki-moon", "Kofi Annan", "Boutros Boutros-Ghali"],
+      "answer": 0,
+      "difficulty": "medium",
+      "explanation": "António Guterres became the 9th UN Secretary-General on January 1, 2017.",
+      "subTopic": "International Organizations"
+    },
+    {
+      "question": "Which Indian state recently introduced the Universal Basic Income scheme?",
+      "options": ["Tamil Nadu", "Kerala", "Himachal Pradesh", "Sikkim"],
+      "answer": 3,
+      "difficulty": "hard",
+      "explanation": "Sikkim announced plans to become the first state in India to implement Universal Basic Income.",
+      "subTopic": "Indian Politics"
+    }
+  ],
+  "history": [
+    {
+      "question": "Which Mughal emperor built the Taj Mahal?",
+      "options": ["Akbar", "Shah Jahan", "Aurangzeb", "Jahangir"],
+      "answer": 1,
+      "difficulty": "easy",
+      "explanation": "Shah Jahan built the Taj Mahal as a mausoleum for his wife Mumtaz Mahal.",
+      "subTopic": "Mughal Empire"
+    },
+    {
+      "question": "In which year did the Battle of Plassey take place?",
+      "options": ["1757", "1761", "1857", "1947"],
+      "answer": 0,
+      "difficulty": "medium",
+      "explanation": "The Battle of Plassey on June 23, 1757, marked the beginning of British colonial rule in India.",
+      "subTopic": "Modern Indian History"
+    },
+    {
+      "question": "Who wrote 'Discovery of India'?",
+      "options": ["Rabindranath Tagore", "Mahatma Gandhi", "Jawaharlal Nehru", "Dr. Ambedkar"],
+      "answer": 2,
+      "difficulty": "medium",
+      "explanation": "Jawaharlal Nehru wrote 'Discovery of India' while in prison during the freedom struggle.",
+      "subTopic": "Indian Literature"
+    }
+  ],
+  "geography": [
+    {
+      "question": "Which is the longest river in India?",
+      "options": ["Godavari", "Yamuna", "Ganga", "Krishna"],
+      "answer": 2,
+      "difficulty": "easy",
+      "explanation": "The Ganga (Ganges) is the longest river in India at 2,525 km.",
+      "subTopic": "Indian Geography"
+    },
+    {
+      "question": "Which state has the longest coastline in India?",
+      "options": ["Kerala", "Gujarat", "Maharashtra", "Tamil Nadu"],
+      "answer": 1,
+      "difficulty": "medium",
+      "explanation": "Gujarat has the longest coastline in India at approximately 1,600 km.",
+      "subTopic": "Physical Geography"
+    },
+    {
+      "question": "The Tropic of Cancer passes through how many states in India?",
+      "options": ["6", "7", "8", "9"],
+      "answer": 2,
+      "difficulty": "hard",
+      "explanation": "Tropic of Cancer passes through 8 states: Gujarat, Rajasthan, Madhya Pradesh, Chhattisgarh, Jharkhand, West Bengal, Tripura, and Mizoram.",
+      "subTopic": "Geographic Concepts"
+    }
+  ],
+  "economics": [
+    {
+      "question": "What is GDP?",
+      "options": ["Gross Domestic Product", "General Domestic Product", "Global Domestic Product", "Government Domestic Product"],
+      "answer": 0,
+      "difficulty": "easy",
+      "explanation": "GDP stands for Gross Domestic Product - the total value of goods and services produced in a country.",
+      "subTopic": "Macroeconomics"
+    },
+    {
+      "question": "Which is the first bank to be established in India?",
+      "options": ["State Bank of India", "Bank of Hindustan", "Bank of Bengal", "Bank of Bombay"],
+      "answer": 1,
+      "difficulty": "medium",
+      "explanation": "Bank of Hindustan was the first bank established in India in 1770.",
+      "subTopic": "Banking"
+    },
+    {
+      "question": "What is the current repo rate announced by RBI? (as of 2023)",
+      "options": ["6.25%", "6.50%", "6.75%", "7.00%"],
+      "answer": 1,
+      "difficulty": "hard",
+      "explanation": "As of 2023, the RBI repo rate is 6.50% - this changes regularly with monetary policy.",
+      "subTopic": "Monetary Policy"
+    }
+  ],
+  "science": [
+    {
+      "question": "What is the unit of electric current?",
+      "options": ["Volt", "Ampere", "Watt", "Ohm"],
+      "answer": 1,
+      "difficulty": "easy",
+      "explanation": "Ampere (A) is the SI unit for electric current, named after André-Marie Ampère.",
+      "subTopic": "Physics"
+    },
+    {
+      "question": "Which gas is most abundant in Earth's atmosphere?",
+      "options": ["Oxygen", "Nitrogen", "Carbon Dioxide", "Argon"],
+      "answer": 1,
+      "difficulty": "medium",
+      "explanation": "Nitrogen comprises about 78% of Earth's atmosphere, while oxygen is about 21%.",
+      "subTopic": "Chemistry"
+    },
+    {
+      "question": "What is photosynthesis?",
+      "options": ["Process of plant growth", "Process of converting sunlight to energy", "Process of water absorption", "Process of root development"],
+      "answer": 1,
+      "difficulty": "easy",
+      "explanation": "Photosynthesis is the process by which plants convert light energy into chemical energy.",
+      "subTopic": "Biology"
+    }
+  ],
+  "polity": [
+    {
+      "question": "How many articles are there in the Indian Constitution?",
+      "options": ["395", "448", "470", "485"],
+      "answer": 1,
+      "difficulty": "medium",
+      "explanation": "The Indian Constitution originally had 395 articles, but now has 448 articles after amendments.",
+      "subTopic": "Constitution"
+    },
+    {
+      "question": "What is the minimum age to become President of India?",
+      "options": ["30 years", "35 years", "40 years", "45 years"],
+      "answer": 1,
+      "difficulty": "medium",
+      "explanation": "According to Article 58, the minimum age to become President of India is 35 years.",
+      "subTopic": "Executive"
+    },
+    {
+      "question": "Who is known as the 'Father of Indian Constitution'?",
+      "options": ["Mahatma Gandhi", "Jawaharlal Nehru", "Dr. B.R. Ambedkar", "Rajendra Prasad"],
+      "answer": 2,
+      "difficulty": "easy",
+      "explanation": "Dr. B.R. Ambedkar is known as the Father of Indian Constitution as he chaired the Drafting Committee.",
+      "subTopic": "Constitutional History"
+    }
+  ],
+  "general": [
+    {
+      "question": "Which day is celebrated as 'World Environment Day'?",
+      "options": ["June 4", "June 5", "June 6", "June 7"],
+      "answer": 1,
+      "difficulty": "easy",
+      "explanation": "World Environment Day is celebrated on June 5 every year.",
+      "subTopic": "Environment"
+    },
+    {
+      "question": "How many countries are members of the United Nations?",
+      "options": ["190", "193", "195", "200"],
+      "answer": 1,
+      "difficulty": "medium",
+      "explanation": "As of 2023, there are 193 member countries in the United Nations.",
+      "subTopic": "International Affairs"
+    }
+  ]
+}
