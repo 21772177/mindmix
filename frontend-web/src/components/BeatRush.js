@@ -264,9 +264,22 @@ function BeatRush({ user, token, onBack }) {
     }
   };
 
-  const handleAudioResult = (isCorrect) => {
+  const handleAudioResult = async (isCorrect) => {
     setIsCorrect(isCorrect);
     setShowResult(true);
+
+    // Update stats in database
+    if (token && user) {
+      try {
+        await axios.post(
+          `${API_URL}/stats/update`,
+          { type: 'beatrush', correct: isCorrect },
+          { headers: { 'Authorization': `Bearer ${token}` } }
+        );
+      } catch (err) {
+        console.error('Failed to update stats:', err);
+      }
+    }
 
     if (isCorrect) {
       setScore(score + 10);
@@ -291,6 +304,19 @@ function BeatRush({ user, token, onBack }) {
     const correct = index === currentChallenge.answer;
     setIsCorrect(correct);
     setShowResult(true);
+
+    // Update stats in database
+    if (token && user) {
+      try {
+        await axios.post(
+          `${API_URL}/stats/update`,
+          { type: 'beatrush', correct },
+          { headers: { 'Authorization': `Bearer ${token}` } }
+        );
+      } catch (err) {
+        console.error('Failed to update stats:', err);
+      }
+    }
 
     if (correct) {
       setScore(score + 10);

@@ -30,19 +30,19 @@ router.get('/leaderboard', async (req, res) => {
     }
 
     const users = await User.find()
-      .select('name email totalXP coins level stage rankings')
-      .sort({ [sortField]: -1 })
+      .select('name email totalXP coins level stage rankings stats')
+      .sort({ 'stats.totalPoints': -1 }) // Sort by new stats system
       .limit(parseInt(limit));
 
     // Add ranking positions
     const leaderboard = users.map((user, index) => ({
       rank: index + 1,
       name: user.name,
-      totalXP: user.totalXP || 0,
-      coins: user.coins || 0,
-      level: user.level || 1,
-      stage: user.stage || 1,
-      score: type === 'global' ? user.totalXP : user.rankings[type] || 0
+      totalPoints: user.stats?.totalPoints || 0,
+      correctAnswers: user.stats?.correctAnswers || 0,
+      level: user.stats?.level || user.level || 1,
+      streak: user.stats?.streak || 0,
+      score: user.stats?.totalPoints || 0 // Use new stats for ranking
     }));
 
     res.json({
@@ -66,36 +66,23 @@ router.get('/stats/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     
-    // Get user
-    const user = await User.findById(userId)
-      .select('name totalXP coins level stage rankings challengesCompleted');
+    // Get user from database with stats
+    const user = await User.findById(userId).select('name totalXP coins level stage rankings challengesCompleted stats');
 
     if (!user) {
       return res.status(404).json({ ok: false, error: 'User not found' });
     }
 
-    // Get score statistics
-    const scores = await Score.find({ userId })
-      .populate('challengeId')
-      .sort({ completedAt: -1 })
-      .limit(50);
-
-    // Calculate statistics
+    // Use stats from user.stats (new stats system) or fallback to old fields
     const stats = {
-      totalChallenges: user.challengesCompleted || 0,
-      totalXP: user.totalXP || 0,
-      coins: user.coins || 0,
-      level: user.level || 1,
+      totalPoints: user.stats?.totalPoints || 0,
+      correctAnswers: user.stats?.correctAnswers || 0,
+      wrongAnswers: user.stats?.wrongAnswers || 0,
+      level: user.stats?.level || user.level || 1,
       stage: user.stage || 1,
-      streak: user.streak || 0,
-      recentChallenges: scores.length,
-      categories: {
-        music: scores.filter(s => s.challengeType === 'music').length,
-        logic: scores.filter(s => s.challengeType === 'logic').length,
-        trivia: scores.filter(s => s.challengeType === 'trivia').length,
-        creative: scores.filter(s => s.challengeType === 'creative').length,
-        math: scores.filter(s => s.challengeType === 'math').length
-      }
+      streak: user.stats?.streak || 0,
+      highestStreak: user.stats?.highestStreak || 0,
+      categories: user.stats?.categories || {}
     };
 
     res.json({
