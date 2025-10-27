@@ -121,9 +121,11 @@ router.get('/quiz/:topic', async (req, res) => {
       isMock: !q._id
     }));
 
-    // Filter out questions user has already answered
+    // Filter out questions user has already answered (for no-repeat system)
     if (userId) {
-      quizzes = await filterAnsweredQuestions(quizzes, userId);
+      console.log(`🔍 Filtering repeats for user ${userId}, topic: ${topic}`);
+      quizzes = await filterAnsweredQuestions(quizzes, userId, topic);
+      console.log(`✅ Returning ${quizzes.length} unique questions for topic: ${topic}`);
     }
 
     // Limit to requested amount
