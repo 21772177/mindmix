@@ -49,6 +49,7 @@ router.get('/health', async (req, res) => {
     environment: process.env.NODE_ENV,
     services: {
       database: false,
+      databaseState: 'unknown',
       openai: false,
       storage: false
     }
@@ -57,7 +58,19 @@ router.get('/health', async (req, res) => {
   // Check MongoDB
   try {
     const mongoose = require('mongoose');
-    health.services.database = mongoose.connection.readyState === 1;
+    const readyState = mongoose.connection.readyState;
+    health.services.database = readyState === 1;
+    health.services.databaseState = {
+      0: 'disconnected',
+      1: 'connected',
+      2: 'connecting',
+      3: 'disconnecting'
+    }[readyState] || 'unknown';
+    
+    if (readyState === 1) {
+      health.services.databaseName = mongoose.connection.db.databaseName;
+      health.services.databaseHost = mongoose.connection.host;
+    }
   } catch (err) {
     // Not connected
   }
