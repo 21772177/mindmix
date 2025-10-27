@@ -14,8 +14,8 @@ const getApiUrl = () => {
   const isVercel = window.location.hostname.includes('vercel.app');
   
   if (isVercel) {
-    // For Vercel, use the backend URL directly
-    return 'https://mindmix-backend-8sx7xr6ok-nikhilesh-shinganes-projects.vercel.app';
+    // For Vercel, use the Render backend
+    return 'https://mindmix-iuzf.onrender.com';
   }
   
   // Check if we have a tunnel URL
