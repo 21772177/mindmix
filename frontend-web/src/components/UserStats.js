@@ -2,17 +2,19 @@ import React from 'react';
 import './UserStats.css';
 
 function UserStats({ user, stats }) {
-  const level = stats?.level || user?.level || 1;
-  const stage = stats?.stage || user?.stage || 1;
-  const totalXP = stats?.totalXP || user?.totalXP || 0;
-  const coins = stats?.coins || user?.coins || 0;
-  const streak = stats?.streak || user?.streak || 0;
+  // Use new stats format
+  const level = stats?.level || 1;
+  const totalPoints = stats?.totalPoints || 0;
+  const correctAnswers = stats?.correctAnswers || 0;
+  const wrongAnswers = stats?.wrongAnswers || 0;
+  const streak = stats?.streak || 0;
+  const highestStreak = stats?.highestStreak || 0;
   
   // Calculate XP needed for next level
   const currentLevelXP = Math.pow(level - 1, 2) * 10;
   const nextLevelXP = Math.pow(level, 2) * 10;
   const xpNeeded = nextLevelXP - currentLevelXP;
-  const currentProgress = totalXP - currentLevelXP;
+  const currentProgress = totalPoints - currentLevelXP;
   const xpPercent = Math.min((currentProgress / xpNeeded) * 100, 100);
 
   return (
@@ -43,8 +45,8 @@ function UserStats({ user, stats }) {
         <div className="stat-card xp-card">
           <div className="stat-icon">⚡</div>
           <div className="stat-info">
-            <div className="stat-label">XP</div>
-            <div className="stat-value">{totalXP.toLocaleString()}</div>
+            <div className="stat-label">Total Points</div>
+            <div className="stat-value">{totalPoints.toLocaleString()}</div>
             <div className="progress-bar">
               <div 
                 className="progress-fill"
@@ -57,12 +59,12 @@ function UserStats({ user, stats }) {
           </div>
         </div>
 
-        {/* Coins */}
+        {/* Correct Answers */}
         <div className="stat-card coins-card">
-          <div className="stat-icon">💰</div>
+          <div className="stat-icon">✅</div>
           <div className="stat-info">
-            <div className="stat-label">Coins</div>
-            <div className="stat-value">{coins.toLocaleString()}</div>
+            <div className="stat-label">Correct</div>
+            <div className="stat-value">{correctAnswers}</div>
           </div>
         </div>
 
