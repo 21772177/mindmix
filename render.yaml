@@ -1,4 +1,5 @@
 services:
+  # Backend API Service
   - type: web
     name: mindmix-backend
     rootDir: backend
@@ -8,12 +9,18 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: MONGO_URI
+        sync: false  # Set this in Render dashboard
+      - key: JWT_SECRET
+        sync: false  # Set this in Render dashboard
 
+  # Frontend Web Service  
   - type: web
     name: mindmix-frontend
+    rootDir: frontend-web
     runtime: static
-    buildCommand: cd frontend-web && npm install && npm run build
-    staticPublishPath: frontend-web/build
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
     envVars:
       - key: REACT_APP_API_URL
         value: https://mindmix-iuzf.onrender.com
