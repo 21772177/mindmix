@@ -113,15 +113,15 @@ function KnowledgeZone({ user, token, onBack }) {
       }, 2000);
     }
     
-    // Mark question as answered for no-repeat system
-    if (token && quiz.question) {
+    // Mark question as answered for no-repeat system - CRITICAL FOR PERSISTENCE
+    if (token && quiz.question && user) {
       try {
-        await axios.post(
-          `${API_URL}/knowledge/quiz/submit`,
+        // Use the AI mark-answered endpoint for consistency
+        const response = await axios.post(
+          `${API_URL}/ai/mark-answered`,
           {
             questionText: quiz.question,
-            answer: selectedOption,
-            timeTaken: 0
+            challengeType: 'knowledge'
           },
           {
             headers: {
@@ -129,8 +129,9 @@ function KnowledgeZone({ user, token, onBack }) {
             }
           }
         );
+        console.log('✅ Knowledge Zone question marked and SAVED:', response.data);
       } catch (err) {
-        // Silent fail
+        console.error('❌ Failed to mark question:', err);
       }
     }
   };

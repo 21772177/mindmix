@@ -85,10 +85,10 @@ function ChallengeView({ challenge, token, onBack, onNext, isMultiQuiz, quizInde
           console.log('Score submitted:', scoreResponse.data.data);
         }
 
-        // Mark this question as answered for no-repeat system
-        if (challenge.prompt && user) {
+        // Mark this question as answered for no-repeat system - CRITICAL FOR PERSISTENCE
+        if (challenge.prompt && user && token) {
           try {
-            await axios.post(
+            const response = await axios.post(
               `${API_URL}/ai/mark-answered`,
               {
                 questionText: challenge.prompt,
@@ -100,9 +100,27 @@ function ChallengeView({ challenge, token, onBack, onNext, isMultiQuiz, quizInde
                 }
               }
             );
-            console.log('✅ Question marked as answered (no-repeat enabled)');
+            console.log('✅ Question marked as answered and SAVED to database:', response.data);
           } catch (err) {
-            console.log('⚠️ Failed to mark question as answered:', err);
+            console.error('❌ FAILED to mark question as answered:', err);
+            // Try alternative endpoint
+            try {
+              await axios.post(
+                `${API_URL}/knowledge/quiz/submit`,
+                {
+                  questionText: challenge.prompt,
+                  answer: index,
+                  timeTaken: timeTaken
+                },
+                {
+                  headers: {
+                    'Authorization': `Bearer ${token}`
+                  }
+                }
+              );
+            } catch (err2) {
+              console.error('❌ Both endpoints failed:', err2);
+            }
           }
         }
 
