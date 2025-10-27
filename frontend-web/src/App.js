@@ -177,7 +177,7 @@ function App() {
 
   return (
     <div className="App">
-      {view !== 'login' && <GlobalHeader showTabs={activeMode === null} onBack={activeMode !== null ? () => setActiveMode(null) : null} />}
+      {view !== 'login' && <GlobalHeader showTabs={activeMode === null && view !== 'challenge'} onBack={view === 'challenge' ? () => setView('dashboard') : (activeMode !== null ? () => setActiveMode(null) : null)} />}
       {view === 'login' && (
         <div style={{
           background: 'linear-gradient(135deg, #007BFF 0%, #8A2BE2 100%)',
@@ -339,13 +339,24 @@ function App() {
         />
       )}
       {view === 'challenge' && (
-        <ChallengeView 
-          challenge={currentChallenge}
-          token={token}
-          user={user}
-          onBack={() => setView('dashboard')}
-          onNextChallenge={handleNextChallenge}
-        />
+        <div style={{ padding: '2rem', backgroundColor: '#f0f8ff', minHeight: '100vh' }}>
+          <div style={{ 
+            maxWidth: '1200px', 
+            margin: '0 auto',
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            padding: '2rem',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+          }}>
+            <ChallengeView 
+              challenge={currentChallenge}
+              token={token}
+              user={user}
+              onBack={() => setView('dashboard')}
+              onNextChallenge={handleNextChallenge}
+            />
+          </div>
+        </div>
       )}
       {view === 'group' && (
         <GroupMode 

@@ -149,6 +149,26 @@ function ChallengeView({ challenge, token, onBack, onNext, isMultiQuiz, quizInde
 
   return (
     <div className="challenge-container">
+      <div style={{ marginBottom: '1rem' }}>
+        <button
+          onClick={onBack}
+          style={{
+            padding: '0.5rem 1.5rem',
+            background: '#007BFF',
+            border: 'none',
+            borderRadius: '8px',
+            color: 'white',
+            cursor: 'pointer',
+            fontWeight: '600',
+            fontSize: '0.9rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          ← Back to Dashboard
+        </button>
+      </div>
       <div className="challenge-card">
         <div className="challenge-header">
           <h2>🎯 Challenge</h2>
