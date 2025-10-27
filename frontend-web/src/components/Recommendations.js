@@ -45,11 +45,19 @@ function Recommendations({ user, token }) {
 
   return (
     <div className="recommendations-container">
-      <h2>💡 Recommendations For You</h2>
+      <h2 style={{ marginTop: 0, marginBottom: '1.5rem', color: '#333' }}>
+        Recommendations for you
+      </h2>
       
       {recommendations.length === 0 ? (
-        <div className="recommendations-empty">
-          <p>Start playing to get personalized recommendations!</p>
+        <div className="recommendations-empty" style={{
+          padding: '2rem',
+          textAlign: 'center',
+          backgroundColor: 'rgba(0, 123, 255, 0.05)',
+          borderRadius: '12px',
+          color: '#666'
+        }}>
+          <p style={{ margin: 0 }}>Start playing to get personalized recommendations!</p>
         </div>
       ) : (
         <div className="recommendations-list">

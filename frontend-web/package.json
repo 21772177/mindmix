@@ -4,16 +4,17 @@
   "private": true,
   "description": "Frontend for AiLiveChallenge",
   "dependencies": {
+    "axios": "^1.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "axios": "^1.5.0",
     "socket.io-client": "^4.6.0"
   },
   "scripts": {
     "start": "DANGEROUSLY_DISABLE_HOST_CHECK=true BROWSER=none HOST=0.0.0.0 react-scripts start",
     "start:proxy": "DANGEROUSLY_DISABLE_HOST_CHECK=true BROWSER=none HOST=0.0.0.0 react-scripts start",
     "build": "CI=false GENERATE_SOURCEMAP=false react-scripts build",
+    "serve": "serve -s build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -34,5 +35,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "serve": "^14.2.5"
   }
 }

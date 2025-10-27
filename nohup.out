@@ -1,0 +1,22 @@
+🚀 Starting MindMix+ for 24/7 Access...
+
+📦 Starting backend on port 4000...
+Backend PID: 16110
+🎨 Starting frontend on port 3000...
+Frontend PID: 16180
+
+🌐 Starting tunnels...
+
+✅ Setup complete!
+
+📱 Your URLs:
+   Frontend: https://mindmix-app.loca.lt
+   Backend: https://mindmix-backend.loca.lt
+
+💡 These URLs work from ANY device!
+
+📋 To check status:
+   tail -f /tmp/backend_24-7.log
+   tail -f /tmp/frontend_24-7.log
+
+🔪 To stop (Ctrl+C or run): killall node npx

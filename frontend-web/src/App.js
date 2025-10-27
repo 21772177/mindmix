@@ -17,7 +17,7 @@ function App() {
   const [token, setToken] = useState(null);
   const [currentChallenge, setCurrentChallenge] = useState(null);
   const [view, setView] = useState('login'); // login, dashboard, challenge, group, battle, knowledge, profile, beatrush
-  const [activeMode, setActiveMode] = useState('play'); // 'play' or 'learn'
+  const [activeMode, setActiveMode] = useState('play'); // 'play', 'learn', 'profile'
 
   const handleLogin = (userData, authToken) => {
     setUser(userData);
@@ -30,30 +30,28 @@ function App() {
       background: 'linear-gradient(135deg, #007BFF 0%, #8A2BE2 100%)',
       color: 'white',
       padding: '1rem 2rem',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
       boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <div style={{
-          fontSize: '2rem',
-          fontWeight: 'bold',
-          background: 'white',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          fontFamily: '"Inter", "Poppins", sans-serif'
-        }}>
-          🧠 MindMix+
-        </div>
-        <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>
-          Play Smart. Learn Faster.
-        </div>
+      <div style={{
+        fontSize: '1.5rem',
+        fontWeight: 'bold',
+        marginBottom: '0.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem'
+      }}>
+        🧠 MindMix+ 
+        <span style={{ fontSize: '0.8rem', fontWeight: 'normal', opacity: 0.9 }}>
+          play smart.learn smart
+        </span>
       </div>
       
-      {/* Mode Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      {/* Three Navigation Tabs */}
+      <div style={{ 
+        display: 'flex', 
+        gap: '1rem',
+        marginTop: '1rem'
+      }}>
         <button
           onClick={() => setActiveMode('play')}
           style={{
@@ -64,7 +62,10 @@ function App() {
             color: 'white',
             cursor: 'pointer',
             fontWeight: '600',
-            transition: 'all 0.3s'
+            transition: 'all 0.3s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
           }}
         >
           🎵 Play Mode
@@ -79,10 +80,31 @@ function App() {
             color: 'white',
             cursor: 'pointer',
             fontWeight: '600',
-            transition: 'all 0.3s'
+            transition: 'all 0.3s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
           }}
         >
           📚 Learn Mode
+        </button>
+        <button
+          onClick={() => setActiveMode('profile')}
+          style={{
+            padding: '0.5rem 1.5rem',
+            background: activeMode === 'profile' ? 'rgba(255,255,255,0.3)' : 'transparent',
+            border: '2px solid white',
+            borderRadius: '20px',
+            color: 'white',
+            cursor: 'pointer',
+            fontWeight: '600',
+            transition: 'all 0.3s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          👤 Profile
         </button>
       </div>
     </div>
@@ -167,65 +189,84 @@ function App() {
         <>
           {/* Show content based on active mode */}
           {activeMode === 'play' && (
-            <div style={{ padding: '1rem' }}>
+            <div style={{ padding: '2rem', backgroundColor: '#f0f8ff', minHeight: '100vh' }}>
               <div style={{ 
-                display: 'flex', 
-                gap: '1rem', 
-                marginBottom: '1.5rem',
-                flexWrap: 'wrap'
+                maxWidth: '1200px', 
+                margin: '0 auto',
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                padding: '2rem',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
               }}>
-                <button 
-                  onClick={() => setView('beatrush')} 
-                  className="btn btn-primary"
-                  style={{
-                    background: 'linear-gradient(135deg, #007BFF 0%, #8A2BE2 100%)',
-                    border: 'none',
-                    color: 'white',
-                    padding: '1rem 2rem',
-                    fontSize: '1.1rem',
-                    borderRadius: '8px'
-                  }}
-                >
-                  🎵 BeatRush
-                </button>
-                <button 
-                  onClick={() => setView('group')} 
-                  className="btn btn-primary"
-                >
-                  👥 Group Play
-                </button>
-                <button 
-                  onClick={() => setView('battle')} 
-                  className="btn btn-primary"
-                >
-                  ⚔️ Live Battle
-                </button>
+                <Dashboard 
+                  user={user} 
+                  token={token} 
+                  onLogout={handleLogout}
+                  onStartChallenge={handleStartChallenge}
+                  onStartGroupMode={() => setView('group')}
+                  onStartBattle={() => setView('battle')}
+                  onStartKnowledge={() => setView('knowledge')}
+                  onOpenProfile={() => setActiveMode('profile')}
+                  onStartBeatRush={() => setView('beatrush')}
+                  activeMode={activeMode}
+                />
+                
               </div>
-              <Dashboard 
-                user={user} 
-                token={token} 
-                onLogout={handleLogout}
-                onStartChallenge={handleStartChallenge}
-                onStartGroupMode={() => setView('group')}
-                onStartBattle={() => setView('battle')}
-                onStartKnowledge={() => setView('knowledge')}
-                onOpenProfile={() => setView('profile')}
-                onStartBeatRush={() => setView('beatrush')}
-              />
             </div>
           )}
           
           {activeMode === 'learn' && (
-            <KnowledgeZone 
-              user={user}
-              token={token}
-              onBack={() => setView('dashboard')}
-            />
+            <div style={{ padding: '2rem', backgroundColor: '#f0f8ff', minHeight: '100vh' }}>
+              <div style={{ 
+                maxWidth: '1200px', 
+                margin: '0 auto',
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                padding: '2rem',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+              }}>
+                <KnowledgeZone 
+                  user={user}
+                  token={token}
+                  onBack={() => setView('dashboard')}
+                />
+              </div>
+            </div>
           )}
-          
-          {/* Shared Leaderboard */}
-          <div style={{ padding: '1rem' }}>
-            <SharedLeaderboard user={user} token={token} activeMode={activeMode} />
+
+          {activeMode === 'profile' && (
+            <div style={{ padding: '2rem', backgroundColor: '#f0f8ff', minHeight: '100vh' }}>
+              <div style={{ 
+                maxWidth: '1200px', 
+                margin: '0 auto',
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                padding: '2rem',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+              }}>
+                <UserProfile 
+                  user={user}
+                  token={token}
+                  onBack={() => setView('dashboard')}
+                  onLogout={handleLogout}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Leaderboard - Always visible on main app UI, below content */}
+          <div style={{ padding: '2rem', backgroundColor: '#f0f8ff' }}>
+            <div style={{ 
+              maxWidth: '1200px', 
+              margin: '0 auto',
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              padding: '2rem',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+            }}>
+              <h2 style={{ marginTop: 0, marginBottom: '1rem' }}>🏆 Leaderboard (Play Mode)</h2>
+              <SharedLeaderboard user={user} token={token} activeMode={activeMode} />
+            </div>
           </div>
         </>
       )}

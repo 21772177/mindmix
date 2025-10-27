@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: mindmix-backend
+    runtime: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  - type: web
+    name: mindmix-frontend
+    runtime: static
+    buildCommand: cd frontend-web && npm install && npm run build
+    staticPublishPath: frontend-web/build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://mindmix-iuzf.onrender.com
+
