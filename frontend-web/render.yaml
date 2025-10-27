@@ -1,10 +1,8 @@
-services:
-  - type: web
-    name: mindmix-frontend
-    runtime: static
-    buildCommand: npm install && npm run build
-    staticPublishPath: build
-    envVars:
-      - key: REACT_APP_API_URL
-        value: https://mindmix-iuzf.onrender.com
-
+name: mindmix-frontend
+type: web
+env: static
+buildCommand: npm install && npm run build
+staticPublishPath: build
+envVars:
+  - key: REACT_APP_API_URL
+    value: https://mindmix-iuzf.onrender.com
