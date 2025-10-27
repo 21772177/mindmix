@@ -83,15 +83,15 @@ function BeatRush({ user, token, onBack }) {
   };
 
   const getMockMusicChallenge = () => {
-    // Mock challenges by genre
+    // Mock challenges by genre with real audio URLs
     const genreChallenges = {
       'bollywood': [
         {
           type: 'guess-song',
-          prompt: '🎵 Play: "Pahli pahli baar..." - Complete the next line!',
-          options: ['Humko tumse pyar hai', 'Maine paya hai', 'Lage hain yeh dil', 'Milte milte hai'],
+          prompt: '🎵 Listen to this song and guess the name!',
+          options: ['Humko Tumse Pyar Hai', 'Tujh Mein Rab Dikhta Hai', 'Munni Badnam Hui', 'Chaiyya Chaiyya'],
           answer: 0,
-          audioUrl: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBCuBzvLZkTwIElKv5OzDYhwHN4zQ8tyVQAo='
+          audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' // Sample audio URL
         },
         {
           type: 'guess-dialogue',
