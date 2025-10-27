@@ -44,6 +44,19 @@ function ChallengeView({ challenge, token, onBack, onNext, isMultiQuiz, quizInde
       setWrongAttemptCount(prev => prev + 1);
     }
 
+    // Update stats in database
+    if (token && user) {
+      try {
+        await axios.post(
+          `${API_URL}/stats/update`,
+          { type: challenge.type || 'general', correct },
+          { headers: { 'Authorization': `Bearer ${token}` } }
+        );
+      } catch (err) {
+        console.error('Failed to update stats:', err);
+      }
+    }
+
     // Submit score if user is logged in
     if (token) {
       try {

@@ -81,6 +81,19 @@ function KnowledgeZone({ user, token, onBack }) {
     const quiz = quizzes[quizIndex];
     const isCorrect = selectedOption === quiz.answer || selectedOption === quiz.correctAnswer;
     
+    // Update stats in database
+    if (token && user) {
+      try {
+        await axios.post(
+          `${API_URL}/stats/update`,
+          { type: 'knowledge', correct: isCorrect },
+          { headers: { 'Authorization': `Bearer ${token}` } }
+        );
+      } catch (err) {
+        console.error('Failed to update stats:', err);
+      }
+    }
+    
     // Show result immediately
     setShowResults(true);
     
