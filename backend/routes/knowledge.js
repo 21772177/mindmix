@@ -4,7 +4,16 @@ const { protect } = require('../middleware/auth');
 const KnowledgeQuiz = require('../models/KnowledgeQuiz');
 const mockQuizzes = require('../data/knowledgeQuizzes.json');
 const upscMpscQuizzes = require('../data/upscMpscQuizzes.json');
-// const { withRetry } = require('../../ai_engine/retry_helper'); // Disabled for now
+const { withRetry } = require('../../ai_engine/retry_helper');
+
+// Initialize OpenAI only if API key is available
+let openai = null;
+if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your-openai-api-key-here') {
+  const OpenAI = require('openai');
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+  });
+}
 const { filterAnsweredQuestions, markQuestionAnswered } = require('../middleware/noRepeatHelper');
 
 // Mock data fallback with UPSC/MPSC questions
@@ -70,19 +79,25 @@ router.get('/quiz/:topic', async (req, res) => {
     const upscTopics = ['currentAffairs', 'polity', 'economics', 'history', 'geography'];
     const isUPSC = upscTopics.includes(topic);
 
-    // Optimize: Skip slow DB queries, use mock data directly for speed
-    let quizzes = getMockQuiz(topic, difficulty);
+    // Try AI generation first if available
+    let quizzes = [];
     
-    // Only try AI if explicitly enabled and needed
-    if (quizzes.length < 3 && isUPSC && process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your-openai-api-key-here') {
+    // Always try AI first for all topics
+    if (openai) {
       try {
+        console.log(`🤖 Using AI to generate ${topic} quiz questions`);
         const aiQuizzes = await generateUPSCQuestions(topic, difficulty, 10);
         if (aiQuizzes && aiQuizzes.length > 0) {
-          quizzes = [...quizzes, ...aiQuizzes];
+          quizzes = aiQuizzes;
         }
       } catch (aiError) {
-        // Silent fail - use mock data
+        console.log('AI generation failed, using mock data:', aiError.message);
       }
+    }
+    
+    // Fallback to mock data if AI didn't work or is not available
+    if (quizzes.length === 0) {
+      quizzes = getMockQuiz(topic, difficulty);
     }
 
     // Format mock data to match schema
@@ -141,7 +156,11 @@ const generateUPSCQuestions = async (topic, difficulty, limit) => {
     'polity': 'Indian Constitution, political system, governance, and public administration',
     'economics': 'Indian economy, economic policies, banking, and financial systems',
     'history': 'Indian history, especially modern Indian history and freedom struggle',
-    'geography': 'Indian geography, physical features, and geographical phenomena'
+    'geography': 'Indian geography, physical features, and geographical phenomena',
+    'science': 'Science - physics, chemistry, biology, and general science',
+    'literature': 'Literature - books, authors, poems, and literary works',
+    'math': 'Mathematics - algebra, geometry, arithmetic, and problem-solving',
+    'general': 'General knowledge - mixed trivia questions'
   };
 
   const topicDescription = topicMapping[topic] || topic;
