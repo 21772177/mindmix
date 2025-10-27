@@ -18,6 +18,12 @@ const getApiUrl = () => {
     return 'https://mindmix-backend-8sx7xr6ok-nikhilesh-shinganes-projects.vercel.app';
   }
   
+  // Check if we have a tunnel URL
+  if (window.location.hostname.includes('loca.lt')) {
+    // Use the backend tunnel URL
+    return 'https://mindmix-backend.loca.lt';
+  }
+  
   // Detect if we're on a tunnel
   const isTunnel = !window.location.hostname.includes('localhost') && 
                     !window.location.hostname.includes('127.0.0.1') &&
