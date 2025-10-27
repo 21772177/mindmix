@@ -26,6 +26,9 @@ const UserSchema = new mongoose.Schema({
     streak: { type: Number, default: 0 },
     highestStreak: { type: Number, default: 0 }
   },
+  answeredQuestions: [{
+    type: String
+  }],
   achievements: [{
     type: String
   }],

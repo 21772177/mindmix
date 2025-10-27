@@ -85,15 +85,14 @@ function ChallengeView({ challenge, token, onBack, onNext, isMultiQuiz, quizInde
           console.log('Score submitted:', scoreResponse.data.data);
         }
 
-        // Also mark question as answered for no-repeat system
-        if (challenge.prompt) {
+        // Mark this question as answered for no-repeat system
+        if (challenge.prompt && user) {
           try {
             await axios.post(
-              `${API_URL}/knowledge/quiz/submit`,
+              `${API_URL}/ai/mark-answered`,
               {
                 questionText: challenge.prompt,
-                answer: index,
-                timeTaken: timeTaken
+                challengeType: challenge.type
               },
               {
                 headers: {
@@ -101,9 +100,9 @@ function ChallengeView({ challenge, token, onBack, onNext, isMultiQuiz, quizInde
                 }
               }
             );
+            console.log('✅ Question marked as answered (no-repeat enabled)');
           } catch (err) {
-            // Silent fail for question tracking
-            console.log('Question tracking skipped');
+            console.log('⚠️ Failed to mark question as answered:', err);
           }
         }
 

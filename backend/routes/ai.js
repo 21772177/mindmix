@@ -76,18 +76,25 @@ router.get('/generate', async (req, res) => {
 
     // If we have allChallenges array (from mock), use it
     if (allChallenges.length > 0) {
-      // Filter out questions user has already answered
       let filteredChallenges = allChallenges;
+      
+      // CRITICAL: Filter out questions user has already answered
       if (userId) {
-        filteredChallenges = await filterAnsweredQuestions(allChallenges, userId);
+        console.log(`🔍 Filtering repeats for user: ${userId}`);
+        filteredChallenges = await filterAnsweredQuestions(allChallenges, userId, type);
       }
       
-      // Return first available challenge
+      // Return first available challenge (guaranteed unique for this user)
       const selectedChallenge = filteredChallenges[0] || getMockChallenge(type, difficulty);
       
       return res.json({
         ok: true,
-        data: selectedChallenge
+        data: selectedChallenge,
+        total: allChallenges.length,
+        available: filteredChallenges.length,
+        message: filteredChallenges.length < allChallenges.length 
+          ? `${allChallenges.length - filteredChallenges.length} questions filtered (already answered)` 
+          : 'All questions available'
       });
     }
 
@@ -138,6 +145,37 @@ router.get('/generate', async (req, res) => {
       ok: false, 
       error: 'Failed to generate challenge',
       details: error.message 
+    });
+  }
+});
+
+// @route   POST /ai/mark-answered
+// @desc    Mark a question as answered by user (prevents repetition)
+// @access  Private
+router.post('/mark-answered', require('../middleware/auth').protect, async (req, res) => {
+  try {
+    const { questionText, challengeType } = req.body;
+    const userId = req.user.id;
+
+    if (!questionText) {
+      return res.status(400).json({ 
+        ok: false, 
+        error: 'Question text is required' 
+      });
+    }
+
+    // Use the no-repeat helper to mark the question
+    await markQuestionAnswered(questionText, userId);
+
+    res.json({
+      ok: true,
+      message: 'Question marked as answered'
+    });
+  } catch (error) {
+    console.error('Error marking question:', error);
+    res.status(500).json({ 
+      ok: false, 
+      error: 'Failed to mark question' 
     });
   }
 });
