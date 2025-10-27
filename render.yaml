@@ -1,9 +1,10 @@
 services:
   - type: web
     name: mindmix-backend
+    rootDir: backend
     runtime: node
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && node server.js
+    buildCommand: npm install
+    startCommand: node server.js
     envVars:
       - key: NODE_ENV
         value: production
