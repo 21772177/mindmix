@@ -30,7 +30,8 @@ function Login({ onLogin }) {
         fullUrl = `${API_URL}${endpoint}`;
       } else {
         // Fallback if API_URL is not set correctly
-        fullUrl = `https://mindmix-backend-8sx7xr6ok-nikhilesh-shinganes-projects.vercel.app${endpoint}`;
+        // Use Render backend as fallback
+        fullUrl = `https://mindmix-iuzf.onrender.com${endpoint}`;
       }
       
       console.log('🔗 API_URL value:', API_URL);
