@@ -51,11 +51,13 @@ router.get('/generate', async (req, res) => {
                 difficulty,
                 audioInstructions: 'Audio will play - listen carefully'
               })},
-              { role: "user", content: `Create a unique ${type} challenge with ${difficulty} difficulty. Return ONLY JSON.` }
-            ],
-            temperature: 0.9,
-            max_tokens: 500
-          });
+            { role: "user", content: `Create a unique ${type} challenge with ${difficulty} difficulty. Return ONLY valid JSON object with no markdown or code blocks.` }
+          ],
+          temperature: 0.95,
+          max_tokens: 600
+        });
+        
+        console.log('🤖 AI response received, parsing...');
 
           return completion.choices[0].message.content;
         });
@@ -64,9 +66,17 @@ router.get('/generate', async (req, res) => {
       }
     }
     
-    // If OpenAI not configured or failed, use mock data
+    // If OpenAI not configured or failed, try to use AI anyway
     if (!aiAttempted || !response) {
-      console.log('🎮 FALLBACK MODE: Using mock challenges');
+      console.log('⚠️ OpenAI not available, will use mock data for now');
+      
+      // Log warning for Render deployment
+      if (!process.env.OPENAI_API_KEY) {
+        console.error('❌ OPENAI_API_KEY not set in environment!');
+        console.error('💡 Set OPENAI_API_KEY in Render dashboard for AI to work');
+      }
+      
+      // Still generate mock challenges for testing
       for (let i = 0; i < 10; i++) {
         const challenge = getMockChallenge(type, difficulty);
         challenge._id = `mock_${i}_${Date.now()}_${Math.random()}`;
