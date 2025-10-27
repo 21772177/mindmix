@@ -27,22 +27,29 @@ const getMockQuiz = (topic, difficulty) => {
     quizzes = quizzes.map(q => ({ ...q, topic }));
   }
   
-  // Add UPSC/MPSC questions only for matching topics
+  // Add UPSC/MPSC questions for matching topics
   const upscTopicMap = {
     'history': 'history',
     'science': 'science',
     'geography': 'geography',
-    'currentAffairs': 'general',
-    'polity': 'general',
-    'economics': 'general',
+    'currentAffairs': 'currentAffairs',
+    'polity': 'polity',
+    'economics': 'economics',
     'general': 'general'
   };
   
-  const mappedTopic = upscTopicMap[topic] || topic;
-  if (upscMpscQuizzes[mappedTopic] && mappedTopic === topic) {
-    const upscQuestions = [...upscMpscQuizzes[mappedTopic]];
+  // For UPSC topics, get from upscMpscQuizzes directly
+  if (['currentAffairs', 'polity', 'economics'].includes(topic) && upscMpscQuizzes[topic]) {
+    const upscQuestions = [...upscMpscQuizzes[topic]];
     upscQuestions.forEach(q => q.topic = topic);
     quizzes = [...quizzes, ...upscQuestions];
+  } else {
+    const mappedTopic = upscTopicMap[topic] || topic;
+    if (upscMpscQuizzes[mappedTopic] && upscMpscQuizzes[mappedTopic].length > 0) {
+      const upscQuestions = [...upscMpscQuizzes[mappedTopic]];
+      upscQuestions.forEach(q => q.topic = topic);
+      quizzes = [...quizzes, ...upscQuestions];
+    }
   }
   
   return quizzes.slice(0, 10);
