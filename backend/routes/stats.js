@@ -32,6 +32,11 @@ router.post('/update', require('../middleware/auth').protect, async (req, res) =
   try {
     const { type, correct } = req.body; // type: 'beatrush', 'learn', correct: true/false
     
+    // Input validation
+    if (typeof correct !== 'boolean') {
+      return res.status(400).json({ ok: false, error: 'Invalid input: correct must be boolean' });
+    }
+    
     const user = await User.findById(req.user.id);
     
     if (!user) {

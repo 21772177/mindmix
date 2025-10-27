@@ -3,9 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/database');
 
-// Load environment variables
-require('dotenv').config();
-
 const app = express();
 
 // Connect to database (async, non-blocking for demo mode)
@@ -15,7 +12,7 @@ connectDB().catch(err => {
 
 // Middleware
 app.use(cors({
-  origin: true, // Allow all origins
+  origin: process.env.FRONTEND_URL || '*', // Use environment variable or allow all
   credentials: true
 }));
 app.use(express.json());
