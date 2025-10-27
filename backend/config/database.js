@@ -11,9 +11,15 @@ const connectDB = async () => {
   }
   
   try {
+    // Parse and log connection details for debugging
+    const parsedUri = new URL(mongoUri);
+    console.log(`🔗 Connecting to MongoDB: ${parsedUri.hostname}`);
+    
     const conn = await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s
+      socketTimeoutMS: 45000,
     });
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
