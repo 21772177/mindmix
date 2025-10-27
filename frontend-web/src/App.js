@@ -17,7 +17,7 @@ function App() {
   const [token, setToken] = useState(null);
   const [currentChallenge, setCurrentChallenge] = useState(null);
   const [view, setView] = useState('login'); // login, dashboard, challenge, group, battle, knowledge, profile, beatrush
-  const [activeMode, setActiveMode] = useState('play'); // 'play', 'learn', 'profile'
+  const [activeMode, setActiveMode] = useState(null); // null = main dashboard, 'play', 'learn', 'profile' = inside mode
 
   const handleLogin = (userData, authToken) => {
     setUser(userData);
@@ -25,7 +25,7 @@ function App() {
     setView('dashboard');
   };
 
-  const GlobalHeader = () => (
+  const GlobalHeader = ({ showTabs = true, onBack = null }) => (
     <div style={{
       background: 'linear-gradient(135deg, #007BFF 0%, #8A2BE2 100%)',
       color: 'white',
@@ -33,80 +33,105 @@ function App() {
       boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
     }}>
       <div style={{
-        fontSize: '1.5rem',
-        fontWeight: 'bold',
-        marginBottom: '0.5rem',
         display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem'
+        justifyContent: 'space-between',
+        alignItems: 'center'
       }}>
-        🧠 MindMix+ 
-        <span style={{ fontSize: '0.8rem', fontWeight: 'normal', opacity: 0.9 }}>
-          play smart.learn smart
-        </span>
+        <div style={{
+          fontSize: '1.5rem',
+          fontWeight: 'bold',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem'
+        }}>
+          🧠 MindMix+ 
+          <span style={{ fontSize: '0.8rem', fontWeight: 'normal', opacity: 0.9 }}>
+            play smart.learn smart
+          </span>
+        </div>
+        
+        {onBack && (
+          <button
+            onClick={onBack}
+            style={{
+              padding: '0.5rem 1.5rem',
+              background: 'rgba(255,255,255,0.2)',
+              border: '2px solid white',
+              borderRadius: '20px',
+              color: 'white',
+              cursor: 'pointer',
+              fontWeight: '600',
+              transition: 'all 0.3s'
+            }}
+          >
+            ← Back to Main
+          </button>
+        )}
       </div>
       
-      {/* Three Navigation Tabs */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '1rem',
-        marginTop: '1rem'
-      }}>
-        <button
-          onClick={() => setActiveMode('play')}
-          style={{
-            padding: '0.5rem 1.5rem',
-            background: activeMode === 'play' ? 'rgba(255,255,255,0.3)' : 'transparent',
-            border: '2px solid white',
-            borderRadius: '20px',
-            color: 'white',
-            cursor: 'pointer',
-            fontWeight: '600',
-            transition: 'all 0.3s',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
-        >
-          🎵 Play Mode
-        </button>
-        <button
-          onClick={() => setActiveMode('learn')}
-          style={{
-            padding: '0.5rem 1.5rem',
-            background: activeMode === 'learn' ? 'rgba(255,255,255,0.3)' : 'transparent',
-            border: '2px solid white',
-            borderRadius: '20px',
-            color: 'white',
-            cursor: 'pointer',
-            fontWeight: '600',
-            transition: 'all 0.3s',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
-        >
-          📚 Learn Mode
-        </button>
-        <button
-          onClick={() => setActiveMode('profile')}
-          style={{
-            padding: '0.5rem 1.5rem',
-            background: activeMode === 'profile' ? 'rgba(255,255,255,0.3)' : 'transparent',
-            border: '2px solid white',
-            borderRadius: '20px',
-            color: 'white',
-            cursor: 'pointer',
-            fontWeight: '600',
-            transition: 'all 0.3s',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
-        >
-          👤 Profile
-        </button>
-      </div>
+      {/* Three Navigation Tabs - Only show on main dashboard */}
+      {showTabs && (
+        <div style={{ 
+          display: 'flex', 
+          gap: '1rem',
+          marginTop: '1rem'
+        }}>
+          <button
+            onClick={() => setActiveMode('play')}
+            style={{
+              padding: '0.5rem 1.5rem',
+              background: 'rgba(255,255,255,0.3)',
+              border: '2px solid white',
+              borderRadius: '20px',
+              color: 'white',
+              cursor: 'pointer',
+              fontWeight: '600',
+              transition: 'all 0.3s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            🎵 Play Mode
+          </button>
+          <button
+            onClick={() => setActiveMode('learn')}
+            style={{
+              padding: '0.5rem 1.5rem',
+              background: 'rgba(255,255,255,0.3)',
+              border: '2px solid white',
+              borderRadius: '20px',
+              color: 'white',
+              cursor: 'pointer',
+              fontWeight: '600',
+              transition: 'all 0.3s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            📚 Learn Mode
+          </button>
+          <button
+            onClick={() => setActiveMode('profile')}
+            style={{
+              padding: '0.5rem 1.5rem',
+              background: 'rgba(255,255,255,0.3)',
+              border: '2px solid white',
+              borderRadius: '20px',
+              color: 'white',
+              cursor: 'pointer',
+              fontWeight: '600',
+              transition: 'all 0.3s',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            👤 Profile
+          </button>
+        </div>
+      )}
     </div>
   );
 
@@ -152,7 +177,7 @@ function App() {
 
   return (
     <div className="App">
-      {view !== 'login' && <GlobalHeader />}
+      {view !== 'login' && <GlobalHeader showTabs={activeMode === null} onBack={activeMode !== null ? () => setActiveMode(null) : null} />}
       {view === 'login' && (
         <div style={{
           background: 'linear-gradient(135deg, #007BFF 0%, #8A2BE2 100%)',
@@ -187,7 +212,43 @@ function App() {
       )}
       {view === 'dashboard' && (
         <>
-          {/* Show content based on active mode */}
+          {/* MAIN DASHBOARD - Show when no mode is selected */}
+          {activeMode === null && (
+            <div style={{ padding: '2rem', backgroundColor: '#f0f8ff', minHeight: '100vh' }}>
+              <div style={{ 
+                maxWidth: '1200px', 
+                margin: '0 auto'
+              }}>
+                <Dashboard 
+                  user={user} 
+                  token={token} 
+                  onLogout={handleLogout}
+                  onStartChallenge={handleStartChallenge}
+                  onStartGroupMode={() => setView('group')}
+                  onStartBattle={() => setView('battle')}
+                  onStartKnowledge={() => setView('knowledge')}
+                  onOpenProfile={() => setActiveMode('profile')}
+                  onStartBeatRush={() => setView('beatrush')}
+                  activeMode={null}
+                />
+                
+                {/* Leaderboard - Always visible on main dashboard */}
+                <div style={{ marginTop: '2rem' }}>
+                  <div style={{
+                    backgroundColor: 'white',
+                    borderRadius: '12px',
+                    padding: '2rem',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+                  }}>
+                    <h2 style={{ marginTop: 0, marginBottom: '1rem' }}>🏆 Leaderboard (Play Mode)</h2>
+                    <SharedLeaderboard user={user} token={token} activeMode={null} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Show full mode page when a mode is selected */}
           {activeMode === 'play' && (
             <div style={{ padding: '2rem', backgroundColor: '#f0f8ff', minHeight: '100vh' }}>
               <div style={{ 

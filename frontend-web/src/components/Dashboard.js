@@ -45,10 +45,11 @@ function Dashboard({ user, token, onLogout, onStartChallenge, onStartGroupMode, 
         <p style={{ margin: 0, color: '#666' }}>Ready for a challenge?</p>
       </div>
 
-      {/* IMPORTANT: Only show game buttons when Play Mode tab is active */}
-      {activeMode === 'play' && (
+      {/* Show content based on where user is */}
+      {activeMode === 'play' ? (
+        // Full Play Mode page - with all buttons
         <>
-          {/* Game Mode Selection Buttons - Only visible in Play Mode */}
+          {/* Game Mode Selection Buttons */}
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
@@ -116,10 +117,45 @@ function Dashboard({ user, token, onLogout, onStartChallenge, onStartGroupMode, 
             </button>
           </div>
 
-          {/* Recommendations - Only visible in Play Mode */}
           <Recommendations user={user} token={token} />
 
-          {/* Generate Challenge - Only visible in Play Mode */}
+          <div className="card" style={{ marginTop: '2rem' }}>
+            <h2 style={{ marginTop: 0 }}>Generate Challenge</h2>
+            
+            <div className="form-group">
+              <label>Challenge Type</label>
+              <select value={type} onChange={(e) => setType(e.target.value)} className="select-input">
+                <option value="logic">🧩 Logic</option>
+                <option value="trivia">📚 Trivia</option>
+                <option value="creative">🎨 Creative</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Difficulty</label>
+              <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} className="select-input">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+
+            {error && <div className="error">{error}</div>}
+            
+            <button 
+              className="btn btn-primary"
+              onClick={handleGenerateChallenge}
+              disabled={generating}
+            >
+              {generating ? 'Generating...' : 'Generate Challenge'}
+            </button>
+          </div>
+        </>
+      ) : (
+        // Main dashboard - only recommendations and generate challenge
+        <>
+          <Recommendations user={user} token={token} />
+          
           <div className="card" style={{ marginTop: '2rem' }}>
             <h2 style={{ marginTop: 0 }}>Generate Challenge</h2>
             
