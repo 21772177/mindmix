@@ -158,6 +158,15 @@ function BeatRush({ user, token, onBack }) {
     if (audioData) {
       setAudioUrl(audioData);
       setIsPlaying(true);
+      
+      // Auto-play the audio after a moment
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.play().catch(err => {
+            console.error('Error playing audio:', err);
+          });
+        }
+      }, 100);
     }
   };
 
@@ -166,6 +175,18 @@ function BeatRush({ user, token, onBack }) {
     setAudioUrl(null);
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  };
+
+  // Text-to-Speech as fallback for challenges without audio files
+  const speakChallenge = (text) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-IN'; // Indian English
+      utterance.rate = 0.9;
+      utterance.pitch = 1.1;
+      window.speechSynthesis.speak(utterance);
     }
   };
 
@@ -491,22 +512,45 @@ function BeatRush({ user, token, onBack }) {
         {/* Audio controls for audio-based challenges */}
         {currentChallenge.type && ['guess-song', 'complete-lyrics', 'memory'].includes(currentChallenge.type) && (
           <div className="audio-controls">
-            {!isPlaying ? (
-              <button 
-                className="btn btn-audio" 
-                onClick={() => playAudio(currentChallenge.audioUrl)}
-              >
-                ▶️ Play Audio
-              </button>
+            {currentChallenge.audioUrl ? (
+              <>
+                {!isPlaying ? (
+                  <button 
+                    className="btn btn-audio" 
+                    onClick={() => playAudio(currentChallenge.audioUrl)}
+                  >
+                    ▶️ Play Audio
+                  </button>
+                ) : (
+                  <button 
+                    className="btn btn-audio-stop" 
+                    onClick={stopAudio}
+                  >
+                    ⏸️ Stop
+                  </button>
+                )}
+              </>
             ) : (
               <button 
-                className="btn btn-audio-stop" 
-                onClick={stopAudio}
+                className="btn btn-audio" 
+                onClick={() => speakChallenge(currentChallenge.prompt)}
               >
-                ⏸️ Stop
+                🔊 Read Question Aloud
               </button>
             )}
-            {audioUrl && <audio ref={audioRef} src={audioUrl} onEnded={stopAudio} autoPlay />}
+            {audioUrl && <audio ref={audioRef} src={audioUrl} onEnded={stopAudio} />}
+          </div>
+        )}
+
+        {/* Text-to-speech button for any challenge */}
+        {!currentChallenge.audioUrl && (
+          <div className="audio-controls">
+            <button 
+              className="btn btn-audio" 
+              onClick={() => speakChallenge(currentChallenge.prompt)}
+            >
+              🔊 Read Question
+            </button>
           </div>
         )}
 
