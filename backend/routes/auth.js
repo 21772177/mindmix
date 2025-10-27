@@ -8,18 +8,10 @@ const router = express.Router();
 const isDBConnected = () => mongoose.connection.readyState === 1;
 
 // @route   POST /auth/register
-// @desc    Register user
+// @desc    Register user - DEMO MODE (no database required)
 // @access  Public
 router.post('/register', async (req, res) => {
   try {
-    if (!isDBConnected()) {
-      return res.status(503).json({
-        ok: false,
-        error: 'Database not connected. Demo mode - cannot register users.',
-        demo: true
-      });
-    }
-    
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -29,40 +21,35 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // Check if user exists
-    const userExists = await User.findOne({ email });
-
-    if (userExists) {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'User already exists' 
-      });
-    }
-
-    // Create user
-    const user = await User.create({
-      name,
-      email,
-      password
-    });
-
-    // Generate token
+    // DEMO MODE: Always allow registration without database
+    console.log('✅ REGISTER: Allowing access for:', email);
+    
+    // Create demo user token
     const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRE || '30d' }
+      { 
+        id: 'demo-' + Date.now(), 
+        email: email,
+        demo: true 
+      },
+      process.env.JWT_SECRET || 'demo-secret-key-change-in-production'
     );
-
-    res.status(201).json({
+    
+    return res.json({
       ok: true,
       data: {
+        token,
         user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role
-        },
-        token
+          id: 'demo-user-' + Date.now(),
+          name: name || email.split('@')[0],
+          email: email,
+          demo: true,
+          stats: {
+            totalPoints: 0,
+            level: 1,
+            correctAnswers: 0,
+            wrongAnswers: 0
+          }
+        }
       }
     });
   } catch (error) {
