@@ -1,106 +1,64 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please add a name'],
+    required: true,
     trim: true
   },
   email: {
     type: String,
-    required: [true, 'Please add an email'],
+    required: true,
     unique: true,
     lowercase: true,
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please add a valid email']
+    trim: true
   },
   password: {
     type: String,
-    required: [true, 'Please add a password'],
-    minlength: 6,
-    select: false
+    required: true
   },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
+  stats: {
+    totalPoints: { type: Number, default: 0 },
+    level: { type: Number, default: 1 },
+    correctAnswers: { type: Number, default: 0 },
+    wrongAnswers: { type: Number, default: 0 },
+    streak: { type: Number, default: 0 },
+    highestStreak: { type: Number, default: 0 }
   },
-  challengesCreated: {
-    type: Number,
-    default: 0
-  },
-  challengesCompleted: {
-    type: Number,
-    default: 0
-  },
-  totalXP: {
-    type: Number,
-    default: 0
-  },
-  coins: {
-    type: Number,
-    default: 0
-  },
-  level: {
-    type: Number,
-    default: 1
-  },
-  stage: {
-    type: Number,
-    default: 1
-  },
-  streak: {
-    type: Number,
-    default: 0
-  },
-  totalPoints: {
-    type: Number,
-    default: 0
-  },
-  rankings: {
-    global: { type: Number, default: 0 },
-    music: { type: Number, default: 0 },
-    logic: { type: Number, default: 0 },
-    trivia: { type: Number, default: 0 },
-    creative: { type: Number, default: 0 },
-    math: { type: Number, default: 0 }
-  },
-  // Track answered questions to prevent repetition
-  answeredQuestions: {
-    type: [String], // Store question hashes
-    default: []
-  },
+  achievements: [{
+    type: String
+  }],
+  friends: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
   createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
     type: Date,
     default: Date.now
   }
 });
 
-// Encrypt password before saving
+// Hash password before saving
 UserSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) {
+  if (!this.isModified('password')) return next();
+  
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
     next();
+  } catch (error) {
+    next(error);
   }
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Match user entered password with hashed password
-UserSchema.methods.matchPassword = async function(enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
-
-// Calculate user level based on XP
-UserSchema.methods.calculateLevel = function() {
-  const xp = this.totalXP;
-  // Level formula: sqrt(xp / 10)
-  const level = Math.floor(Math.sqrt(xp / 10)) + 1;
-  return Math.min(level, 100); // Max level 100
-};
-
-// Calculate stage based on level
-UserSchema.methods.calculateStage = function() {
-  return Math.floor(this.level / 10) + 1;
+// Method to compare password
+UserSchema.methods.comparePassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
 module.exports = mongoose.model('User', UserSchema);

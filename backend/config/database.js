@@ -1,14 +1,12 @@
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
-  // Skip if in demo mode (no valid mongo URI)
-  const mongoUri = process.env.MONGO_URI;
-  const isDemoMode = !mongoUri || mongoUri.includes('localhost') || mongoUri.includes('example');
+  // Get MongoDB URI from environment
+  const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
   
-  if (isDemoMode) {
-    console.log('🎮 DEMO MODE: Database features disabled');
-    console.log('📝 Register/Login disabled - using mock challenges only');
-    console.log('💡 To enable full features, configure MongoDB Atlas in .env');
+  if (!mongoUri) {
+    console.log('⚠️  No MongoDB URI found. Running in DEMO MODE.');
+    console.log('💡 Set MONGO_URI environment variable to enable database features');
     return false;
   }
   
@@ -19,11 +17,12 @@ const connectDB = async () => {
     });
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    console.log(`📊 Database: ${conn.connection.name}`);
     return true;
   } catch (error) {
-    console.error(`❌ MongoDB Error: ${error.message}`);
-    console.log('🎮 Running in DEMO MODE (database features disabled)');
-    console.log('💡 Fix MONGO_URI in .env to enable full features');
+    console.error(`❌ MongoDB Connection Error: ${error.message}`);
+    console.log('⚠️  Running in DEMO MODE (database features disabled)');
+    console.log('💡 Check MONGO_URI in environment variables');
     return false;
   }
 };
