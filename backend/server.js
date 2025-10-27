@@ -56,6 +56,8 @@ app.use('/notifications', require('./routes/notifications').router);
 app.use('/api/notifications', require('./routes/notifications').router);
 app.use('/friends', require('./routes/friends'));
 app.use('/api/friends', require('./routes/friends'));
+app.use('/stats', require('./routes/stats'));
+app.use('/api/stats', require('./routes/stats'));
 
 // ICE Configuration endpoint
 app.get('/config/ice', (req, res) => {
