@@ -55,6 +55,7 @@ app.use('/friends', require('./routes/friends'));
 app.use('/api/friends', require('./routes/friends'));
 app.use('/stats', require('./routes/stats'));
 app.use('/api/stats', require('./routes/stats'));
+app.use('/debug', require('./routes/debug'));
 
 // ICE Configuration endpoint
 app.get('/config/ice', (req, res) => {
