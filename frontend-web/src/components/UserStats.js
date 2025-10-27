@@ -36,8 +36,10 @@ function UserStats({ user, stats }) {
         <div className="stat-card stage-card">
           <div className="stat-icon">🎯</div>
           <div className="stat-info">
-            <div className="stat-label">Stage</div>
-            <div className="stat-value">{stage}</div>
+            <div className="stat-label">Accuracy</div>
+            <div className="stat-value">
+              {totalPoints > 0 ? Math.round((correctAnswers / (correctAnswers + wrongAnswers)) * 100) : 0}%
+            </div>
           </div>
         </div>
 
