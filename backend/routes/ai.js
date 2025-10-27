@@ -26,59 +26,52 @@ router.get('/generate', async (req, res) => {
     // Generate multiple challenges to filter repeats
     const allChallenges = [];
     
-    // Demo mode: Use mock data if OpenAI is not configured
-    if (!openai) {
-      console.log('🎮 DEMO MODE: Using mock challenges (OpenAI not configured)');
-      
-      // Get multiple mock challenges
-      for (let i = 0; i < 10; i++) {
-        const challenge = getMockChallenge(type, difficulty);
-        // Add unique ID for repeat tracking
-        challenge._id = `mock_${i}_${Date.now()}`;
-        // Don't add variant text - keep prompts clean
-        allChallenges.push(challenge);
-      }
-    } else {
-
     let response;
-    try {
-      response = await withRetry(async () => {
-        // Enhanced prompt for audio-based challenges
-        const audioPrompt = type === 'music' 
-          ? `Create a music challenge. The prompt should instruct the user to LISTEN to audio and identify the song, dialogue, or complete lyrics. Format as JSON with: type, prompt, options, answer, difficulty, audioInstructions. The prompt should say "🎵 Listen to this audio" or similar to indicate audio will play.`
-          : `Create a ${type} challenge with ${difficulty} difficulty. Return only JSON with fields: type, prompt, options, answer, difficulty, metadata.`;
-        
-        const completion = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
-          messages: [
-            { role: "system", content: prompts.system },
-            { role: "user", content: audioPrompt },
-            { role: "assistant", content: JSON.stringify({
-              type: 'music',
-              prompt: '🎵 Listen to this audio clip and guess the song name',
-              options: ['Pahli Pahli Baar', 'Jai Ho', 'Munni Badnam', 'Chaiyya Chaiyya'],
-              answer: 0,
-              difficulty,
-              audioInstructions: 'Audio will play - listen carefully'
-            })},
-            { role: "user", content: `Create a unique ${type} challenge with ${difficulty} difficulty.` }
-          ],
-          temperature: 0.8,
-          max_tokens: 300
-        });
+    let aiAttempted = false;
+    
+    if (openai) {
+      aiAttempted = true;
+      try {
+        response = await withRetry(async () => {
+          // Enhanced prompt for audio-based challenges
+          const audioPrompt = type === 'music' 
+            ? `Create a music challenge. The prompt should instruct the user to LISTEN to audio and identify the song, dialogue, or complete lyrics. Format as JSON with: type, prompt, options, answer, difficulty, audioInstructions. The prompt should say "🎵 Listen to this audio" or similar to indicate audio will play. Return ONLY valid JSON, no additional text.`
+            : `Create a ${type} challenge with ${difficulty} difficulty. Return only JSON with fields: type, prompt, options, answer, difficulty, metadata. Return ONLY valid JSON, no additional text.`;
+          
+          const completion = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: [
+              { role: "system", content: prompts.system + " Return ONLY valid JSON object, no markdown, no code blocks." },
+              { role: "user", content: audioPrompt },
+              { role: "assistant", content: JSON.stringify({
+                type: 'music',
+                prompt: '🎵 Listen to this audio clip and guess the song name',
+                options: ['Pahli Pahli Baar', 'Jai Ho', 'Munni Badnam', 'Chaiyya Chaiyya'],
+                answer: 0,
+                difficulty,
+                audioInstructions: 'Audio will play - listen carefully'
+              })},
+              { role: "user", content: `Create a unique ${type} challenge with ${difficulty} difficulty. Return ONLY JSON.` }
+            ],
+            temperature: 0.9,
+            max_tokens: 500
+          });
 
-        return completion.choices[0].message.content;
-      });
-    } catch (aiError) {
-      console.log('⚠️ OpenAI failed, falling back to mock challenges:', aiError.message);
-      // Fallback to mock challenges on any OpenAI error
-      for (let i = 0; i < 10; i++) {
-        const challenge = getMockChallenge(type, difficulty);
-        challenge._id = `mock_${i}_${Date.now()}`;
-        // Don't add variant text - keep prompts clean
-        allChallenges.push(challenge);
+          return completion.choices[0].message.content;
+        });
+      } catch (aiError) {
+        console.log('⚠️ OpenAI failed:', aiError.message);
       }
     }
+    
+    // If OpenAI not configured or failed, use mock data
+    if (!aiAttempted || !response) {
+      console.log('🎮 FALLBACK MODE: Using mock challenges');
+      for (let i = 0; i < 10; i++) {
+        const challenge = getMockChallenge(type, difficulty);
+        challenge._id = `mock_${i}_${Date.now()}_${Math.random()}`;
+        allChallenges.push(challenge);
+      }
     }
 
     // If we have allChallenges array (from mock), use it
