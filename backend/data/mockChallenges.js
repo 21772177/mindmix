@@ -3,8 +3,8 @@
 // Extended questions for better variety
 const extendedMockQuestions = {
   music: [
-    { type: 'music', prompt: 'Who wrote the song "Bohemian Rhapsody"?', options: ['The Beatles', 'Queen', 'Led Zeppelin', 'Pink Floyd'], answer: 1, difficulty: 'easy' },
-    { type: 'music', prompt: 'Which instrument has 88 keys?', options: ['Guitar', 'Piano', 'Violin', 'Drums'], answer: 1, difficulty: 'easy' },
+    { type: 'music', prompt: '🎵 Listen to this audio clip and guess the Bollywood song name. Click Play Audio below to hear the clip.', options: ['Pahli Pahli Baar', 'Tum Hi Ho', 'Munni Badnam Hui', 'Chaiyya Chaiyya'], answer: 0, difficulty: 'easy' },
+    { type: 'music', prompt: '🗣️ Listen to this dialogue and guess which movie it\'s from. Click Play Audio to hear the clip.', options: ['Pushpa', 'RRR', 'KGF', 'Bahubali'], answer: 0, difficulty: 'easy' },
     { type: 'music', prompt: 'What is a group of 8 musicians called?', options: ['Quintet', 'Sextet', 'Septet', 'Octet'], answer: 3, difficulty: 'medium' },
     { type: 'music', prompt: 'Who composed "The Four Seasons"?', options: ['Mozart', 'Bach', 'Vivaldi', 'Beethoven'], answer: 2, difficulty: 'medium' },
     { type: 'music', prompt: 'What genre does Michael Jackson belong to?', options: ['Rock', 'Pop', 'Jazz', 'Country'], answer: 1, difficulty: 'easy' }

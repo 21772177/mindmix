@@ -43,16 +43,28 @@ router.get('/generate', async (req, res) => {
     let response;
     try {
       response = await withRetry(async () => {
+        // Enhanced prompt for audio-based challenges
+        const audioPrompt = type === 'music' 
+          ? `Create a music challenge. The prompt should instruct the user to LISTEN to audio and identify the song, dialogue, or complete lyrics. Format as JSON with: type, prompt, options, answer, difficulty, audioInstructions. The prompt should say "🎵 Listen to this audio" or similar to indicate audio will play.`
+          : `Create a ${type} challenge with ${difficulty} difficulty. Return only JSON with fields: type, prompt, options, answer, difficulty, metadata.`;
+        
         const completion = await openai.chat.completions.create({
           model: "gpt-3.5-turbo",
           messages: [
             { role: "system", content: prompts.system },
-            { role: "user", content: `Create a ${type} challenge with ${difficulty} difficulty. Return only JSON with fields: type, prompt, options, answer, difficulty, metadata.` },
-            { role: "assistant", content: JSON.stringify(prompts.challengeFewShot[0]) },
+            { role: "user", content: audioPrompt },
+            { role: "assistant", content: JSON.stringify({
+              type: 'music',
+              prompt: '🎵 Listen to this audio clip and guess the song name',
+              options: ['Pahli Pahli Baar', 'Jai Ho', 'Munni Badnam', 'Chaiyya Chaiyya'],
+              answer: 0,
+              difficulty,
+              audioInstructions: 'Audio will play - listen carefully'
+            })},
             { role: "user", content: `Create a unique ${type} challenge with ${difficulty} difficulty.` }
           ],
           temperature: 0.8,
-          max_tokens: 200
+          max_tokens: 300
         });
 
         return completion.choices[0].message.content;
