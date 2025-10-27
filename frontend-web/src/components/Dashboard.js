@@ -47,30 +47,39 @@ function Dashboard({ user, token, onLogout, onStartChallenge, onStartGroupMode, 
 
       {/* Show content based on where user is */}
       {activeMode === 'play' ? (
-        // Full Play Mode page - with all buttons
-        <>
-          {/* Game Mode Selection Buttons */}
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '1rem',
-            marginBottom: '2rem'
+        // Simple Play Mode page - ONLY three buttons
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '60vh',
+          gap: '2rem'
+        }}>
+          <div style={{
+            display: 'flex',
+            gap: '2rem',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            maxWidth: '900px',
+            width: '100%'
           }}>
             <button 
               onClick={onStartBeatRush} 
               style={{
-                padding: '2rem',
+                padding: '3rem 4rem',
                 background: 'linear-gradient(135deg, #007BFF 0%, #8A2BE2 100%)',
                 border: 'none',
-                borderRadius: '12px',
+                borderRadius: '16px',
                 color: 'white',
-                fontSize: '1.2rem',
+                fontSize: '1.5rem',
                 fontWeight: 'bold',
                 cursor: 'pointer',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                transition: 'transform 0.2s'
+                boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
+                transition: 'all 0.3s',
+                minWidth: '250px'
               }}
-              onMouseOver={(e) => e.target.style.transform = 'translateY(-4px)'}
+              onMouseOver={(e) => e.target.style.transform = 'translateY(-8px)'}
               onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
             >
               🎵 BeatRush
@@ -79,18 +88,19 @@ function Dashboard({ user, token, onLogout, onStartChallenge, onStartGroupMode, 
             <button 
               onClick={onStartGroupMode} 
               style={{
-                padding: '2rem',
+                padding: '3rem 4rem',
                 background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
                 border: 'none',
-                borderRadius: '12px',
+                borderRadius: '16px',
                 color: 'white',
-                fontSize: '1.2rem',
+                fontSize: '1.5rem',
                 fontWeight: 'bold',
                 cursor: 'pointer',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                transition: 'transform 0.2s'
+                boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
+                transition: 'all 0.3s',
+                minWidth: '250px'
               }}
-              onMouseOver={(e) => e.target.style.transform = 'translateY(-4px)'}
+              onMouseOver={(e) => e.target.style.transform = 'translateY(-8px)'}
               onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
             >
               👥 Group Play
@@ -99,60 +109,27 @@ function Dashboard({ user, token, onLogout, onStartChallenge, onStartGroupMode, 
             <button 
               onClick={onStartBattle} 
               style={{
-                padding: '2rem',
+                padding: '3rem 4rem',
                 background: 'linear-gradient(135deg, #dc3545 0%, #fd7e14 100%)',
                 border: 'none',
-                borderRadius: '12px',
+                borderRadius: '16px',
                 color: 'white',
-                fontSize: '1.2rem',
+                fontSize: '1.5rem',
                 fontWeight: 'bold',
                 cursor: 'pointer',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                transition: 'transform 0.2s'
+                boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
+                transition: 'all 0.3s',
+                minWidth: '250px'
               }}
-              onMouseOver={(e) => e.target.style.transform = 'translateY(-4px)'}
+              onMouseOver={(e) => e.target.style.transform = 'translateY(-8px)'}
               onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
             >
               ⚔️ Live Battle
             </button>
           </div>
-
-          <Recommendations user={user} token={token} />
-
-          <div className="card" style={{ marginTop: '2rem' }}>
-            <h2 style={{ marginTop: 0 }}>Generate Challenge</h2>
-            
-            <div className="form-group">
-              <label>Challenge Type</label>
-              <select value={type} onChange={(e) => setType(e.target.value)} className="select-input">
-                <option value="logic">🧩 Logic</option>
-                <option value="trivia">📚 Trivia</option>
-                <option value="creative">🎨 Creative</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Difficulty</label>
-              <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} className="select-input">
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </select>
-            </div>
-
-            {error && <div className="error">{error}</div>}
-            
-            <button 
-              className="btn btn-primary"
-              onClick={handleGenerateChallenge}
-              disabled={generating}
-            >
-              {generating ? 'Generating...' : 'Generate Challenge'}
-            </button>
-          </div>
-        </>
+        </div>
       ) : (
-        // Main dashboard - only recommendations and generate challenge
+        // Main dashboard - recommendations and generate challenge
         <>
           <Recommendations user={user} token={token} />
           
