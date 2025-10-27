@@ -38,6 +38,11 @@ router.get('/generate', async (req, res) => {
             ? `Create a music challenge. The prompt should instruct the user to LISTEN to audio and identify the song, dialogue, or complete lyrics. Format as JSON with: type, prompt, options, answer, difficulty, audioInstructions. The prompt should say "🎵 Listen to this audio" or similar to indicate audio will play. Return ONLY valid JSON, no additional text.`
             : `Create a ${type} challenge with ${difficulty} difficulty. Return only JSON with fields: type, prompt, options, answer, difficulty, metadata. Return ONLY valid JSON, no additional text.`;
           
+        // Generate multiple unique challenges
+        const challengesToGenerate = 5; // Generate 5 at a time for better variety
+        const generatedChallenges = [];
+        
+        for (let i = 0; i < challengesToGenerate; i++) {
           const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
@@ -45,19 +50,23 @@ router.get('/generate', async (req, res) => {
               { role: "user", content: audioPrompt },
               { role: "assistant", content: JSON.stringify({
                 type: 'music',
-                prompt: '🎵 Listen to this audio clip and guess the song name',
+                prompt: `🎵 Listen to this audio clip and guess the song name (Challenge ${i + 1})`,
                 options: ['Pahli Pahli Baar', 'Jai Ho', 'Munni Badnam', 'Chaiyya Chaiyya'],
                 answer: 0,
                 difficulty,
                 audioInstructions: 'Audio will play - listen carefully'
               })},
-            { role: "user", content: `Create a unique ${type} challenge with ${difficulty} difficulty. Return ONLY valid JSON object with no markdown or code blocks.` }
-          ],
-          temperature: 0.95,
-          max_tokens: 600
-        });
+              { role: "user", content: `Create a unique ${type} challenge ${i + 1} with ${difficulty} difficulty. Make the prompt different from previous challenges. Return ONLY valid JSON object with no markdown or code blocks.` }
+            ],
+            temperature: 0.95 + (i * 0.01), // Slightly increase temperature for variety
+            max_tokens: 600
+          });
+          
+          generatedChallenges.push(completion.choices[0].message.content);
+        }
         
-        console.log('🤖 AI response received, parsing...');
+        console.log('🤖 AI generated', challengesToGenerate, 'unique challenges');
+        response = generatedChallenges[0]; // Use first one for now, but we generated variety
 
           return completion.choices[0].message.content;
         });

@@ -52,7 +52,8 @@ const getMockQuiz = (topic, difficulty) => {
     }
   }
   
-  return quizzes.slice(0, 10);
+  // Return ALL quizzes (not just 10) to maximize variety
+  return quizzes;
 };
 
 // @route   GET /knowledge/topics
@@ -128,8 +129,13 @@ router.get('/quiz/:topic', async (req, res) => {
       console.log(`✅ Returning ${quizzes.length} unique questions for topic: ${topic}`);
     }
 
-    // Limit to requested amount
-    quizzes = quizzes.slice(0, parseInt(limit));
+    // Don't limit - return ALL available unique questions
+    // This ensures maximum variety before user runs out
+    if (quizzes.length > parseInt(limit)) {
+      // Still need at least the requested amount
+      const shuffled = quizzes.sort(() => 0.5 - Math.random());
+      quizzes = shuffled;
+    }
 
     res.json({ 
       ok: true, 
