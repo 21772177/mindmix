@@ -232,18 +232,6 @@ function App() {
                   activeMode={null}
                 />
                 
-                {/* Leaderboard - Always visible on main dashboard */}
-                <div style={{ marginTop: '2rem' }}>
-                  <div style={{
-                    backgroundColor: 'white',
-                    borderRadius: '12px',
-                    padding: '2rem',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
-                  }}>
-                    <h2 style={{ marginTop: 0, marginBottom: '1rem' }}>🏆 Leaderboard (Play Mode)</h2>
-                    <SharedLeaderboard user={user} token={token} activeMode={null} />
-                  </div>
-                </div>
               </div>
             </div>
           )}
