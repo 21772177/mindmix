@@ -56,7 +56,7 @@ function KnowledgeZone({ user, token, onBack }) {
       
       const response = await axios.get(`${API_URL}/knowledge/quiz/${topic}`, {
         params: { userId: user?.id },
-        timeout: 3000 // 3 second timeout for fast response
+        timeout: 15000 // 15 second timeout for better reliability
       });
       if (response.data.ok) {
         setQuizzes(response.data.data.quizzes);
@@ -67,8 +67,14 @@ function KnowledgeZone({ user, token, onBack }) {
         setAnswers({});
       }
     } catch (err) {
-      setError('Failed to load quizzes');
-      console.error(err);
+      console.error('Quiz fetch error:', err);
+      if (err.message === 'Network Error' || err.code === 'ECONNABORTED') {
+        setError('Network error. Please check your connection and try again.');
+      } else if (err.response?.status === 404) {
+        setError('No quizzes available for this topic yet.');
+      } else {
+        setError('Failed to load quizzes. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -286,7 +292,6 @@ function KnowledgeZone({ user, token, onBack }) {
           ← Back
         </button>
         <h1>📚 Study Zone</h1>
-        <p className="subtitle">Prepare for competitive exams!</p>
       </div>
 
       {loading && <div className="loading">Loading quizzes...</div>}
