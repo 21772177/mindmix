@@ -39,8 +39,6 @@ function SharedLeaderboard({ user, token, activeMode }) {
 
   return (
     <div className="shared-leaderboard card">
-      <h3>🏆 Leaderboard (Play Mode)</h3>
-      
       {leaderboard.length === 0 ? (
         <p style={{ textAlign: 'center', color: '#666', padding: '2rem' }}>
           No entries yet. Be the first to apply!
