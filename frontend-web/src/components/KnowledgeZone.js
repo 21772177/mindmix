@@ -14,6 +14,7 @@ function KnowledgeZone({ user, token, onBack }) {
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [wrongAttempts, setWrongAttempts] = useState({}); // Track wrong attempts per question
 
   useEffect(() => {
     fetchTopics();
@@ -87,6 +88,13 @@ function KnowledgeZone({ user, token, onBack }) {
     const quiz = quizzes[quizIndex];
     const isCorrect = selectedOption === quiz.answer || selectedOption === quiz.correctAnswer;
     
+    // Track wrong attempts
+    if (!isCorrect) {
+      setWrongAttempts(prev => ({ ...prev, [quizIndex]: (prev[quizIndex] || 0) + 1 }));
+    }
+    
+    const currentWrongAttempts = wrongAttempts[quizIndex] || 0;
+    
     // Update stats in database
     if (token && user) {
       try {
@@ -107,37 +115,51 @@ function KnowledgeZone({ user, token, onBack }) {
     if (isCorrect) {
       setScore(score + (quiz.points || 10));
       
+      // Mark question as answered for no-repeat system - CRITICAL FOR PERSISTENCE
+      if (token && quiz.question && user) {
+        try {
+          const response = await axios.post(
+            `${API_URL}/ai/mark-answered`,
+            {
+              questionText: quiz.question,
+              challengeType: 'knowledge'
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            }
+          );
+          console.log('✅ Knowledge Zone question marked and SAVED:', response.data);
+        } catch (err) {
+          console.error('❌ Failed to mark question:', err);
+        }
+      }
+      
       // Auto-advance to next question after 2 seconds
       setTimeout(() => {
         if (quizIndex < quizzes.length - 1) {
           setCurrentQuiz(quizIndex + 1);
           setShowResults(false);
+          setWrongAttempts(prev => ({ ...prev, [quizIndex]: 0 }));
         } else {
           // Last question - show final results
           handleSubmit();
         }
       }, 2000);
-    }
-    
-    // Mark question as answered for no-repeat system - CRITICAL FOR PERSISTENCE
-    if (token && quiz.question && user) {
-      try {
-        // Use the AI mark-answered endpoint for consistency
-        const response = await axios.post(
-          `${API_URL}/ai/mark-answered`,
-          {
-            questionText: quiz.question,
-            challengeType: 'knowledge'
-          },
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          }
-        );
-        console.log('✅ Knowledge Zone question marked and SAVED:', response.data);
-      } catch (err) {
-        console.error('❌ Failed to mark question:', err);
+    } else {
+      // Wrong answer - show message and allow retry
+      if (currentWrongAttempts >= 2) {
+        // After 2 wrong attempts, show correct answer and wait for manual next
+        setTimeout(() => {
+          // Don't auto-advance, wait for user to click next
+        }, 2000);
+      } else {
+        // After 1 wrong attempt, show message and allow retry
+        setTimeout(() => {
+          setShowResults(false);
+          setAnswers({ ...answers, [quizIndex]: undefined });
+        }, 2000);
       }
     }
   };
@@ -223,19 +245,43 @@ function KnowledgeZone({ user, token, onBack }) {
                 })}
               </div>
 
-              {showResults && currentQuiz < quizzes.length - 1 && (
-                <div className="quiz-continue">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => {
-                      setCurrentQuiz(currentQuiz + 1);
-                      setShowResults(false);
-                    }}
-                  >
-                    Continue to Next Question
-                  </button>
-                </div>
-              )}
+              {showResults && (() => {
+                const isCorrect = userAnswer === quiz.answer || userAnswer === quiz.correctAnswer;
+                const wrongAttempts = wrongAttempts[currentQuiz] || 0;
+                
+                return (
+                  <div className="quiz-feedback">
+                    {isCorrect ? (
+                      <div className="success-message">
+                        <h3>🎉 Correct!</h3>
+                        <p>Great job! Moving to next question...</p>
+                      </div>
+                    ) : wrongAttempts >= 2 ? (
+                      <div className="failure-message">
+                        <h3>❌ Wrong Answer</h3>
+                        <p>The correct answer is: <strong>{quiz.options[quiz.answer || quiz.correctAnswer]}</strong></p>
+                        {currentQuiz < quizzes.length - 1 && (
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => {
+                              setCurrentQuiz(currentQuiz + 1);
+                              setShowResults(false);
+                              setAnswers({ ...answers, [currentQuiz]: undefined });
+                            }}
+                          >
+                            Next Question →
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="try-again-message">
+                        <h3>❌ Wrong Answer</h3>
+                        <p>Try again!</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
               {showResults && currentQuiz === quizzes.length - 1 && (
                 <div className="quiz-continue">
