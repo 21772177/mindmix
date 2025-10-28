@@ -7,16 +7,37 @@ const User = require('../models/User');
  * @param {String} challengeType - Type of challenge (optional)
  * @returns {Array} Filtered questions array
  */
+// Cache for user's answered questions (in-memory cache)
+const userCache = new Map();
+
 const filterAnsweredQuestions = async (questions, userId, challengeType = null) => {
   try {
-    // Get user's answered questions
-    const user = await User.findById(userId);
+    // Check cache first
+    if (userCache.has(userId)) {
+      const answeredSet = userCache.get(userId);
+      
+      const filtered = questions.filter(q => {
+        const textToHash = q.prompt || q.question;
+        if (!textToHash) return true;
+        const questionHash = createHash(textToHash);
+        return !answeredSet.has(questionHash);
+      });
+      
+      console.log(`🔍 Filtered ${questions.length - filtered.length} repeated questions (from cache)`);
+      return filtered;
+    }
+    
+    // Get user's answered questions (only if not in cache)
+    const user = await User.findById(userId).select('answeredQuestions'); // Only fetch needed field
     if (!user || !user.answeredQuestions || user.answeredQuestions.length === 0) {
       return questions; // No answered questions, return all
     }
 
     // Create a hash of answered questions for fast lookup
     const answeredSet = new Set(user.answeredQuestions);
+    
+    // Cache it
+    userCache.set(userId, answeredSet);
 
     // Filter questions based on prompt text hash
     const filtered = questions.filter(q => {
@@ -49,33 +70,27 @@ const markQuestionAnswered = async (questionText, userId) => {
       return;
     }
 
-    const user = await User.findById(userId);
-    if (!user) {
-      console.log('⚠️ User not found:', userId);
-      return;
-    }
-
     const questionHash = createHash(questionText);
     
-    // Initialize answeredQuestions if it doesn't exist
-    if (!user.answeredQuestions) {
-      user.answeredQuestions = [];
+    // Update cache first (fast)
+    if (userCache.has(userId)) {
+      const answeredSet = userCache.get(userId);
+      if (!answeredSet.has(questionHash)) {
+        answeredSet.add(questionHash);
+        userCache.set(userId, answeredSet);
+      }
     }
     
-    // Add to answered questions if not already there
-    if (!user.answeredQuestions.includes(questionHash)) {
-      user.answeredQuestions.push(questionHash);
-      
-      // Keep only last 2000 answered questions to prevent array from growing too large
-      if (user.answeredQuestions.length > 2000) {
-        user.answeredQuestions = user.answeredQuestions.slice(-2000);
-      }
-      
-      await user.save();
-      console.log(`✅ Marked question as answered for user ${userId} (hash: ${questionHash})`);
-    } else {
-      console.log(`ℹ️ Question already marked as answered (hash: ${questionHash})`);
-    }
+    // Update database asynchronously (don't wait)
+    User.findByIdAndUpdate(
+      userId,
+      { $addToSet: { answeredQuestions: questionHash } },
+      { upsert: true, new: true }
+    ).then(() => {
+      console.log(`✅ Marked question as answered for user ${userId}`);
+    }).catch(err => {
+      console.error('Error updating DB:', err);
+    });
   } catch (error) {
     console.error('Error marking question as answered:', error);
   }
