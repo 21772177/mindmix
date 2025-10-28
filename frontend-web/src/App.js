@@ -18,6 +18,8 @@ function App() {
   const [currentChallenge, setCurrentChallenge] = useState(null);
   const [view, setView] = useState('login'); // login, dashboard, challenge, group, battle, knowledge, profile, beatrush
   const [activeMode, setActiveMode] = useState(null); // null = main dashboard, 'play', 'learn', 'profile' = inside mode
+  const [selectedType, setSelectedType] = useState(null); // Store user's selected challenge type
+  const [selectedDifficulty, setSelectedDifficulty] = useState(null); // Store user's selected difficulty
 
   const handleLogin = (userData, authToken) => {
     setUser(userData);
@@ -144,21 +146,24 @@ function App() {
   const handleStartChallenge = (challenge) => {
     setCurrentChallenge(challenge);
     setView('challenge');
+    // Store the initial type and difficulty from the challenge
+    if (challenge.type) setSelectedType(challenge.type);
+    if (challenge.difficulty) setSelectedDifficulty(challenge.difficulty);
   };
 
   const handleNextChallenge = async () => {
-    // Generate next challenge automatically
+    // Generate next challenge using SAME type and difficulty
     try {
-      // Get random type and difficulty for variety
-      const types = ['logic', 'trivia', 'creative']; // Only 3 types
-      const difficulties = ['easy', 'medium', 'hard'];
-      const randomType = types[Math.floor(Math.random() * types.length)];
-      const randomDifficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
+      // Use the stored type and difficulty from user's initial selection
+      const type = selectedType || 'logic'; // Fallback to logic if not set
+      const difficulty = selectedDifficulty || 'medium'; // Fallback to medium if not set
+      
+      console.log(`🎯 Generating next challenge with type: ${type}, difficulty: ${difficulty}`);
       
       const response = await axios.get(`${API_URL}/ai/generate`, {
         params: { 
-          type: randomType, 
-          difficulty: randomDifficulty,
+          type: type, 
+          difficulty: difficulty,
           userId: user?.id 
         }
       });
