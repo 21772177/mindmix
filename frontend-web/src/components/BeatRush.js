@@ -11,6 +11,7 @@ function BeatRush({ user, token, onBack }) {
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [challengeNumber, setChallengeNumber] = useState(1);
+  const [wrongAttempts, setWrongAttempts] = useState(0); // Track wrong attempts for current challenge
   const [genre, setGenre] = useState('');
   const [challengeType, setChallengeType] = useState('');
   const [quizStarted, setQuizStarted] = useState(false);
@@ -326,6 +327,11 @@ function BeatRush({ user, token, onBack }) {
     setIsCorrect(correct);
     setShowResult(true);
 
+    // Track wrong attempts
+    if (!correct) {
+      setWrongAttempts(prev => prev + 1);
+    }
+
     // Update stats in database
     if (token && user) {
       try {
@@ -342,15 +348,56 @@ function BeatRush({ user, token, onBack }) {
     if (correct) {
       setScore(score + 10);
       setStreak(streak + 1);
+      
+      // Auto-advance after 2 seconds if correct
+      setTimeout(() => {
+        setWrongAttempts(0); // Reset wrong attempts
+        setChallengeNumber(challengeNumber + 1);
+        generateChallenge();
+      }, 2000);
+      
+      // Mark question as answered for no-repeat system
+      if (token && currentChallenge.prompt && user) {
+        try {
+          await axios.post(
+            `${API_URL}/ai/mark-answered`,
+            {
+              questionText: currentChallenge.prompt,
+              challengeType: 'beatrush'
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            }
+          );
+          console.log('✅ BeatRush question marked as answered');
+        } catch (err) {
+          console.error('❌ Failed to mark question:', err);
+        }
+      }
     } else {
       setStreak(0);
+      
+      // If wrong and it's the second attempt, show correct answer
+      if (wrongAttempts >= 2) {
+        // Don't auto-advance, wait for user to click next
+        return;
+      } else {
+        // First wrong attempt - reset after 2 seconds
+        setTimeout(() => {
+          setShowResult(false);
+          setSelectedAnswer(null);
+        }, 2000);
+      }
     }
+  };
 
-    // Auto-advance after 2 seconds
-    setTimeout(() => {
-      setChallengeNumber(challengeNumber + 1);
-      generateChallenge();
-    }, 2000);
+  const handleNext = () => {
+    setWrongAttempts(0); // Reset wrong attempts
+    setStreak(0);
+    setChallengeNumber(challengeNumber + 1);
+    generateChallenge();
   };
 
   const handleSkip = () => {
@@ -613,7 +660,25 @@ function BeatRush({ user, token, onBack }) {
 
         {showResult && (
           <div className={`result-message ${isCorrect ? 'success' : 'failure'}`}>
-            {isCorrect ? '🎉 Correct! +10' : '❌ Wrong'}
+            {isCorrect ? (
+              <div>
+                <h3>🎉 Correct! +10</h3>
+                <p>Great job! Moving to next challenge...</p>
+              </div>
+            ) : wrongAttempts >= 2 ? (
+              <div>
+                <h3>❌ Wrong Answer</h3>
+                <p>The correct answer is: <strong>{currentChallenge.options[currentChallenge.answer]}</strong></p>
+                <button className="btn btn-primary" onClick={handleNext} style={{ marginTop: '1rem' }}>
+                  Next Challenge →
+                </button>
+              </div>
+            ) : (
+              <div>
+                <h3>❌ Wrong Answer</h3>
+                <p>Try again!</p>
+              </div>
+            )}
           </div>
         )}
 
