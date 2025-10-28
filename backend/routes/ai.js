@@ -29,7 +29,8 @@ router.get('/generate', async (req, res) => {
     let response;
     let aiAttempted = false;
     
-    if (openai) {
+    // Skip AI if no key set (faster fallback)
+    if (openai && process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your-openai-api-key-here') {
       aiAttempted = true;
       try {
         response = await withRetry(async () => {
