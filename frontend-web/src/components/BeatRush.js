@@ -379,12 +379,13 @@ function BeatRush({ user, token, onBack }) {
     } else {
       setStreak(0);
       
-      // If wrong and it's the second attempt, show correct answer
-      if (wrongAttempts >= 2) {
+      // Check the count BEFORE incrementing (wrongAttempts will be the NEW count)
+      // If it's already >= 1 (this is the second wrong attempt), show correct answer
+      if (wrongAttempts >= 1) {
         // Don't auto-advance, wait for user to click next
         return;
       } else {
-        // First wrong attempt - reset after 2 seconds
+        // First wrong attempt - reset after 2 seconds for retry
         setTimeout(() => {
           setShowResult(false);
           setSelectedAnswer(null);
@@ -665,7 +666,7 @@ function BeatRush({ user, token, onBack }) {
                 <h3>🎉 Correct! +10</h3>
                 <p>Great job! Moving to next challenge...</p>
               </div>
-            ) : wrongAttempts >= 2 ? (
+            ) : wrongAttempts >= 1 ? (
               <div>
                 <h3>❌ Wrong Answer</h3>
                 <p>The correct answer is: <strong>{currentChallenge.options[currentChallenge.answer]}</strong></p>
