@@ -2,13 +2,17 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/database');
+const { isFirebaseEnabled } = require('./config/firebase');
 
 const app = express();
 
-// Connect to database (async, non-blocking for demo mode)
-connectDB().catch(err => {
-  console.log('⚠️  Continuing in demo mode without database');
-});
+// Initialize Firebase (if configured) and connect to Mongo as fallback
+if (!isFirebaseEnabled()) {
+  // Connect to database (async, non-blocking for demo mode)
+  connectDB().catch(err => {
+    console.log('⚠️  Continuing in demo mode without database');
+  });
+}
 
 // Middleware
 app.use(cors({
@@ -20,10 +24,14 @@ app.use(express.urlencoded({ extended: true }));
 
 // Environment validation
 function validateEnv() {
-  const required = ['MONGO_URI', 'JWT_SECRET'];
+  const required = ['JWT_SECRET'];
   const missing = required.filter(k => !process.env[k]);
   if (missing.length > 0) {
     console.warn('Warning: missing required env vars:', missing.join(', '));
+  }
+  
+  if (!isFirebaseEnabled() && !process.env.MONGO_URI && !process.env.MONGODB_URI) {
+    console.warn('Warning: No Firebase or MongoDB configured. Running in demo mode.');
   }
   
   if (!process.env.OPENAI_API_KEY) {

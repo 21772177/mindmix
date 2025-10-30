@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const User = require('../models/User');
+const { findUserByEmail, createUser, comparePassword, getUserById, isFirebaseEnabled } = require('../services/userStore');
 const router = express.Router();
 
 // Check if database is connected
@@ -55,7 +55,7 @@ router.post('/register', async (req, res) => {
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await findUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({
         ok: false,
@@ -64,28 +64,11 @@ router.post('/register', async (req, res) => {
     }
 
     // Create new user
-    const user = new User({
-      name,
-      email,
-      password,
-      stats: {
-        totalPoints: 0,
-        level: 1,
-        correctAnswers: 0,
-        wrongAnswers: 0,
-        streak: 0,
-        highestStreak: 0
-      }
-    });
-
-    await user.save();
+    const user = await createUser({ name, email, password });
 
     // Create token
     const token = jwt.sign(
-      { 
-        id: user._id.toString(),
-        email: user.email
-      },
+      { id: user.id, email: user.email },
       process.env.JWT_SECRET || 'demo-secret-key-change-in-production'
     );
 
@@ -96,7 +79,7 @@ router.post('/register', async (req, res) => {
       data: {
         token,
         user: {
-          id: user._id.toString(),
+          id: user.id,
           name: user.name,
           email: user.email,
           stats: user.stats
@@ -157,7 +140,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Find user in database
-    const user = await User.findOne({ email });
+    const user = await findUserByEmail(email);
     if (!user) {
       return res.status(401).json({
         ok: false,
@@ -166,7 +149,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Verify password
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await comparePassword(user, password);
     if (!isMatch) {
       return res.status(401).json({
         ok: false,
@@ -176,10 +159,7 @@ router.post('/login', async (req, res) => {
 
     // Create token
     const token = jwt.sign(
-      { 
-        id: user._id.toString(),
-        email: user.email
-      },
+      { id: user.id, email: user.email },
       process.env.JWT_SECRET || 'demo-secret-key-change-in-production'
     );
 
@@ -190,7 +170,7 @@ router.post('/login', async (req, res) => {
       data: {
         token,
         user: {
-          id: user._id.toString(),
+          id: user.id,
           name: user.name,
           email: user.email,
           stats: user.stats
@@ -208,21 +188,20 @@ router.post('/login', async (req, res) => {
 // @access  Private
 router.get('/me', require('../middleware/auth').protect, async (req, res) => {
   try {
-    if (!isDBConnected()) {
+    if (!isDBConnected() && !isFirebaseEnabled()) {
       return res.status(503).json({
         ok: false,
         error: 'Database not connected.',
         demo: true
       });
     }
-    
-    const user = await User.findById(req.user.id);
+    const user = await getUserById(req.user.id);
 
     res.json({
       ok: true,
       data: {
         user: {
-          id: user._id,
+          id: user.id,
           name: user.name,
           email: user.email,
           role: user.role,

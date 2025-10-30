@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { getUserById } = require('../services/userStore');
 
 const protect = async (req, res, next) => {
   let token;
@@ -12,8 +12,9 @@ const protect = async (req, res, next) => {
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Get user from the token
-      req.user = await User.findById(decoded.id).select('-password');
+      // Get user from the token (Mongo or Firestore via userStore)
+      const user = await getUserById(decoded.id);
+      req.user = user ? { id: user.id, email: user.email, name: user.name } : null;
 
       if (!req.user) {
         return res.status(401).json({ ok: false, error: 'User not found' });

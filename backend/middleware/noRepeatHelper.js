@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const { getAnsweredSet, addAnsweredHash } = require('../services/userStore');
 
 /**
  * Filter out questions that user has already answered
@@ -28,13 +28,13 @@ const filterAnsweredQuestions = async (questions, userId, challengeType = null) 
     }
     
     // Get user's answered questions (only if not in cache)
-    const user = await User.findById(userId).select('answeredQuestions'); // Only fetch needed field
-    if (!user || !user.answeredQuestions || user.answeredQuestions.length === 0) {
+    const answeredSetFromStore = await getAnsweredSet(userId);
+    if (!answeredSetFromStore || answeredSetFromStore.size === 0) {
       return questions; // No answered questions, return all
     }
 
     // Create a hash of answered questions for fast lookup
-    const answeredSet = new Set(user.answeredQuestions);
+    const answeredSet = answeredSetFromStore;
     
     // Cache it
     userCache.set(userId, answeredSet);
@@ -82,11 +82,7 @@ const markQuestionAnswered = async (questionText, userId) => {
     }
     
     // Update database asynchronously (don't wait)
-    User.findByIdAndUpdate(
-      userId,
-      { $addToSet: { answeredQuestions: questionHash } },
-      { upsert: true, new: true }
-    ).then(() => {
+    addAnsweredHash(userId, questionHash).then(() => {
       console.log(`✅ Marked question as answered for user ${userId}`);
     }).catch(err => {
       console.error('Error updating DB:', err);
