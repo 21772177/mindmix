@@ -1,0 +1,16 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Audio files should be accessed via signed URLs only
+    match /audio/{allPaths=**} {
+      allow read: if false; // prevent public reads; use signed URLs
+      allow write: if request.auth != null; // adjust as needed
+    }
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+
