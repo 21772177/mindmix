@@ -1,6 +1,7 @@
 const admin = require('firebase-admin');
 
 let firestore = null;
+let adminApp = null;
 let firebaseEnabled = false;
 
 function initFirebase() {
@@ -16,7 +17,7 @@ function initFirebase() {
 
     const serviceAccount = JSON.parse(svc);
 
-    admin.initializeApp({
+    adminApp = admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       projectId
     });
@@ -40,10 +41,18 @@ function getFirestore() {
   return firestore;
 }
 
+function getAdmin() {
+  if (!adminApp) {
+    initFirebase();
+  }
+  return admin;
+}
+
 function isFirebaseEnabled() {
   return !!getFirestore();
 }
 
-module.exports = { getFirestore, isFirebaseEnabled };
+module.exports = { getFirestore, isFirebaseEnabled, getAdmin };
+
 
 
