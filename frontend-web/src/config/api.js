@@ -3,41 +3,14 @@
 
 // Auto-detect API URL based on current location
 const getApiUrl = () => {
-  // Check for environment variable first (set in Vercel)
+  // 1) Env variable wins (e.g., local dev or custom API)
   if (process.env.REACT_APP_API_URL) {
     const url = process.env.REACT_APP_API_URL;
-    // Ensure it ends without trailing slash
     return url.endsWith('/') ? url.slice(0, -1) : url;
   }
-  
-  // Detect if we're on Vercel
-  const isVercel = window.location.hostname.includes('vercel.app');
-  
-  if (isVercel) {
-    // For Vercel, use the Render backend
-    return 'https://mindmix-iuzf.onrender.com';
-  }
-  
-  // Check if we have a tunnel URL
-  if (window.location.hostname.includes('loca.lt')) {
-    // Use the backend tunnel URL
-    return 'https://mindmix-backend.loca.lt';
-  }
-  
-  // Detect if we're on a tunnel
-  const isTunnel = !window.location.hostname.includes('localhost') && 
-                    !window.location.hostname.includes('127.0.0.1') &&
-                    (window.location.hostname.includes('loca.lt') || 
-                     window.location.hostname.includes('serveo') ||
-                     window.location.hostname.includes('ngrok'));
-  
-  // For tunnels, use the same origin
-  if (isTunnel) {
-    return window.location.origin;
-  }
-  
-  // For localhost, use direct backend URL
-  return 'http://192.168.0.109:4000';
+  // 2) Default to Firebase Hosting rewrite to Functions
+  //    All API calls go to '/api/*' which Hosting rewrites to the Cloud Function 'api'
+  return '/api';
 };
 
 const API_URL = getApiUrl();

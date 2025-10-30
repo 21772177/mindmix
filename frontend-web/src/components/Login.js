@@ -24,15 +24,8 @@ function Login({ onLogin }) {
         ? { email: formData.email, password: formData.password }
         : formData;
 
-      // Build full URL with proper protocol handling
-      let fullUrl;
-      if (API_URL && API_URL.startsWith('http')) {
-        fullUrl = `${API_URL}${endpoint}`;
-      } else {
-        // Fallback if API_URL is not set correctly
-        // Use Render backend as fallback
-        fullUrl = `https://mindmix-iuzf.onrender.com${endpoint}`;
-      }
+      // Build full URL using centralized API base (Firebase Hosting rewrites -> /api)
+      const fullUrl = `${API_URL}${endpoint}`;
       
       console.log('🔗 API_URL value:', API_URL);
       console.log('📡 Full URL:', fullUrl);

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config/api';
 import './GroupMode.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
 function GroupMode({ user, token, onBack }) {
   const [mode, setMode] = useState('select'); // select, create, join, waiting, playing
